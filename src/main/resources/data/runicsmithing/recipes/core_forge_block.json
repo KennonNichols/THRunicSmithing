@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "III",
+    "DFD",
+    "DCD"
+  ],
+  "key": {
+    "I": {
+      "item": "minecraft:iron_ingot"
+    },
+    "D": {
+      "item": "minecraft:deepslate_bricks"
+    },
+    "C": {
+      "item": "minecraft:coal_block"
+    },
+    "F": {
+      "item": "runicsmithing:forge_block"
+    }
+  },
+  "result": {
+    "item": "runicsmithing:core_forge_block"
+  }
+}

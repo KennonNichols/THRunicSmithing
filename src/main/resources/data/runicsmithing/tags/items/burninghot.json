@@ -1,0 +1,10 @@
+{
+  "replace": false,
+  "values": [
+    "runicsmithing:hot_copper_ingot",
+    "runicsmithing:hot_iron_ingot",
+    "runicsmithing:hot_gold_ingot",
+    "runicsmithing:hot_diamond",
+    "runicsmithing:hot_netherite_ingot"
+  ]
+}

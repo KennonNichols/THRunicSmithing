@@ -1,6 +1,19 @@
 package com.thathitmann.runicsmithing;
 
 import com.mojang.logging.LogUtils;
+import com.thathitmann.runicsmithing.block.ModBlocks;
+import com.thathitmann.runicsmithing.block.entity.ModBlockEntities;
+import com.thathitmann.runicsmithing.item.ModItems;
+import com.thathitmann.runicsmithing.screen.CoreForgeBlockScreen;
+import com.thathitmann.runicsmithing.screen.ForgeBlockMenu;
+import com.thathitmann.runicsmithing.screen.ForgeBlockScreen;
+import com.thathitmann.runicsmithing.screen.ModMenuTypes;
+import net.minecraft.client.gui.screens.MenuScreens;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.ItemTags;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.Item;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -21,14 +34,22 @@ public class RunicSmithing
     private static final Logger LOGGER = LogUtils.getLogger();
     public RunicSmithing()
     {
+        //Create Event Bus
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
-
+        //Register items
+        ModItems.register(modEventBus);
+        //Register blocks
+        ModBlocks.register(modEventBus);
+        //Register block entities
+        ModBlockEntities.register(modEventBus);
+        //Register the menus
+        ModMenuTypes.register(modEventBus);
         // Register the commonSetup method for modloading
         modEventBus.addListener(this::commonSetup);
-
         // Register ourselves for server and other game events we are interested in
         MinecraftForge.EVENT_BUS.register(this);
     }
+
 
     private void commonSetup(final FMLCommonSetupEvent event)
     {
@@ -36,6 +57,9 @@ public class RunicSmithing
 
     }
 
+    public static final TagKey<Item> burningHotTag = ItemTags.create(new ResourceLocation("runicsmithing", "burninghot"));
+    public static final TagKey<Item> forgeableTag = ItemTags.create(new ResourceLocation("runicsmithing", "forgeable"));
+    public static final TagKey<Item> heatInsulatingTag = ItemTags.create(new ResourceLocation("runicsmithing", "heatinsulating"));
 
     // You can use EventBusSubscriber to automatically register all static methods in the class annotated with @SubscribeEvent
     @Mod.EventBusSubscriber(modid = MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
@@ -44,7 +68,8 @@ public class RunicSmithing
         @SubscribeEvent
         public static void onClientSetup(FMLClientSetupEvent event)
         {
-
+            MenuScreens.register(ModMenuTypes.FORGE_BLOCK_MENU.get(), ForgeBlockScreen::new);
+            MenuScreens.register(ModMenuTypes.CORE_FORGE_BLOCK_MENU.get(), CoreForgeBlockScreen::new);
         }
     }
 }
