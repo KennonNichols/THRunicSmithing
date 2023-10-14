@@ -18,12 +18,13 @@ public class THRSItemBase extends Item {
     }
 
     //region ToolTip
-    protected String tooltip;
+    protected String tooltip = "";
+    protected String baseTooltip = "";
     @Override
     public void appendHoverText(ItemStack itemStack, @Nullable Level level, List<Component> components, TooltipFlag flag) {
-        if (tooltip != null) {
+        if (tooltip != "" || baseTooltip != "") {
             if (Screen.hasShiftDown()) {
-                components.add(Component.literal(tooltip).withStyle(ChatFormatting.DARK_PURPLE));
+                components.add(Component.literal(baseTooltip + tooltip).withStyle(ChatFormatting.DARK_PURPLE));
             } else {
                 components.add(Component.literal("Press SHIFT for more info").withStyle(ChatFormatting.AQUA));
             }

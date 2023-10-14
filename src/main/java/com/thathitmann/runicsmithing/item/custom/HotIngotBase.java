@@ -16,7 +16,7 @@ public class HotIngotBase extends SmithingChainItem {
 
     public HotIngotBase(Properties properties, RunicSmithingMaterial material) {
         super(properties);
-        tooltip += "\nToo hot to handle! Use tongs or forge gloves to hold safely.";
+        baseTooltip = "Too hot to handle! Use tongs or forge gloves to hold safely.\n";
         this.material = material;
     }
 

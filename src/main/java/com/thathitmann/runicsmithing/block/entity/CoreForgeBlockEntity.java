@@ -1,9 +1,9 @@
 package com.thathitmann.runicsmithing.block.entity;
 
+import com.thathitmann.runicsmithing.item.custom.Aspect;
 import com.thathitmann.runicsmithing.item.custom.ForgeIngotLookup;
 import com.thathitmann.runicsmithing.item.custom.HotIngotBase;
 import com.thathitmann.runicsmithing.screen.CoreForgeBlockMenu;
-import com.thathitmann.runicsmithing.screen.ForgeBlockMenu;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.SimpleContainer;
@@ -12,13 +12,14 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import org.checkerframework.checker.units.qual.A;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import static com.thathitmann.runicsmithing.RunicSmithing.forgeableTag;
+import static com.thathitmann.runicsmithing.block.custom.CoreForgeBlock.DEPTH;
 import static com.thathitmann.runicsmithing.block.custom.ForgeBlock.LIT;
 
 public class CoreForgeBlockEntity extends ForgeBlockEntityParent implements MenuProvider {
@@ -26,7 +27,10 @@ public class CoreForgeBlockEntity extends ForgeBlockEntityParent implements Menu
 
     public CoreForgeBlockEntity(BlockPos pos, BlockState state) {
         super(pos, state, ModBlockEntities.CORE_FORGE_BLOCK.get());
+
     }
+
+
 
 
     @Nullable
@@ -38,6 +42,7 @@ public class CoreForgeBlockEntity extends ForgeBlockEntityParent implements Menu
 
 
     public static void tick(Level level, BlockPos blockPos, BlockState blockState, ForgeBlockEntityParent entity) {
+
         if(level.isClientSide()) {
             return;
         }
@@ -88,11 +93,48 @@ public class CoreForgeBlockEntity extends ForgeBlockEntityParent implements Menu
 
     }
 
+    private static Aspect getDepthAspect(BlockState state) {
+        int depth = state.getValue(DEPTH);
+
+        if (depth > 500) {
+            return new Aspect("Coreforged at " + -depth + " for +15 quality.", 15);
+        } else if (depth > 450) {
+            return new Aspect("Hellforged at " + -depth + " for +10 quality.", 10);
+        } else if (depth > 400) {
+            return new Aspect("Netherforged at " + -depth + " for +9 quality.", 9);
+        } else if (depth > 350) {
+            return new Aspect("Stygianforged at " + -depth + " for +8 quality.", 8);
+        } else if (depth > 300) {
+            return new Aspect("Ultradeepforged at " + -depth + " for +7 quality.", 7);
+        } else if (depth > 250) {
+            return new Aspect("Deepforged at " + -depth + " for +6 quality.", 6);
+        } else if (depth > 200) {
+            return new Aspect("Dwarvforged at " + -depth + " for +5 quality.", 5);
+        } else if (depth > 150) {
+            return new Aspect("Extreme pressure forged at " + -depth + " for +4 quality.", 4);
+        } else if (depth > 100) {
+            return new Aspect("Pressure forged at " + -depth + " for +3 quality.", 3);
+        } else if (depth > 50) {
+            return new Aspect("Low-pressure forged at " + -depth + " for +2 quality.", 2);
+        } else if (depth > 0) {
+            return new Aspect("Depth forged at " + -depth + " for +1 quality.", 1);
+        } else {
+            return new Aspect("Normally forged for no quality bonus.", 10);
+        }
+    }
 
     private static void craftItem(ForgeBlockEntityParent entity, SimpleContainer inventory) {
         if (hasRecipe(entity, inventory)) {
             Item forgeInput = inventory.getItem(0).getItem();
             Item forgeOutput = ForgeIngotLookup.forgeHeatingLookup.get(forgeInput);
+
+
+            if (forgeOutput instanceof HotIngotBase) {
+                ((HotIngotBase) forgeOutput).addAspect(getDepthAspect(entity.getBlockState()));
+            }
+
+
+
             entity.itemHandler.extractItem(0, 1, false);
             entity.itemHandler.setStackInSlot(1, new ItemStack(forgeOutput, entity.itemHandler.getStackInSlot(1).getCount() + 1));
         }

@@ -22,6 +22,7 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.Nullable;
@@ -30,6 +31,7 @@ public class CoreForgeBlock extends BaseEntityBlock {
 
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final BooleanProperty LIT = BooleanProperty.create("lit");
+    public static final IntegerProperty DEPTH = IntegerProperty.create("depth",0,3000);
 
 
 
@@ -43,13 +45,26 @@ public class CoreForgeBlock extends BaseEntityBlock {
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         builder.add(LIT);
         builder.add(FACING);
+        builder.add(DEPTH);
         super.createBlockStateDefinition(builder);
     }
 
 
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext blockPlaceContext) {
-        return (this.defaultBlockState().setValue(FACING,blockPlaceContext.getHorizontalDirection().getOpposite())).setValue(LIT, false);
+
+
+
+        int depth = -blockPlaceContext.getClickedPos().getY();
+        if (depth < 0 ) {
+            depth = 0;
+        } else if (depth > 3000) {
+            depth = 3000;
+        }
+
+
+
+        return (this.defaultBlockState().setValue(FACING,blockPlaceContext.getHorizontalDirection().getOpposite())).setValue(LIT, false).setValue(DEPTH, depth);
     }
 
     @Override
