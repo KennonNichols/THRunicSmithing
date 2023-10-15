@@ -1,4 +1,4 @@
-package com.thathitmann.runicsmithing.item.custom;
+package com.thathitmann.runicsmithing.item.custom.supers;
 
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
@@ -22,7 +22,7 @@ public class ForgeIngotLookup {
     static Item hotNetheriteIngot = ForgeRegistries.ITEMS.getValue(new ResourceLocation("runicsmithing:hot_netherite_ingot"));
 
 
-    public static final HashMap<Item, Item> forgeHeatingLookup = new HashMap<Item, Item>(Map.of(
+    public static final HashMap<Item, Item> forgeHeatingLookup = new HashMap<>(Map.of(
             copperIngot, hotCopperIngot,
             goldIngot, hotGoldIngot,
             ironIngot, hotIronIngot,

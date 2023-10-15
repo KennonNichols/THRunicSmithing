@@ -8,6 +8,7 @@ import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
+import org.jetbrains.annotations.NotNull;
 
 public class ForgeBlockScreen extends AbstractContainerScreen<ForgeBlockMenu> {
 
@@ -28,7 +29,7 @@ public class ForgeBlockScreen extends AbstractContainerScreen<ForgeBlockMenu> {
 
 
     @Override
-    protected void renderBg(PoseStack poseStack, float partialTick, int mouseX, int mouseY) {
+    protected void renderBg(@NotNull PoseStack poseStack, float partialTick, int mouseX, int mouseY) {
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderColor(1.0f,1.0f,1.0f,1.0f);
         RenderSystem.setShaderTexture(0, TEXTURE);
@@ -57,7 +58,7 @@ public class ForgeBlockScreen extends AbstractContainerScreen<ForgeBlockMenu> {
     }
 
     @Override
-    public void render(PoseStack poseStack, int mouseX, int mouseY, float delta) {
+    public void render(@NotNull PoseStack poseStack, int mouseX, int mouseY, float delta) {
         renderBackground(poseStack);
         super.render(poseStack, mouseX, mouseY, delta);
         renderTooltip(poseStack, mouseX, mouseY);

@@ -1,9 +1,9 @@
 package com.thathitmann.runicsmithing.block.entity;
 
-import com.thathitmann.runicsmithing.item.custom.Aspect;
-import com.thathitmann.runicsmithing.item.custom.ForgeIngotLookup;
-import com.thathitmann.runicsmithing.item.custom.HotIngotBase;
-import com.thathitmann.runicsmithing.item.custom.SmithingChainItem;
+import com.thathitmann.runicsmithing.item.custom.supers.Aspect;
+import com.thathitmann.runicsmithing.item.custom.supers.ForgeIngotLookup;
+import com.thathitmann.runicsmithing.item.custom.supers.HotIngotBase;
+import com.thathitmann.runicsmithing.item.custom.supers.SmithingChainItem;
 import com.thathitmann.runicsmithing.screen.CoreForgeBlockMenu;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;

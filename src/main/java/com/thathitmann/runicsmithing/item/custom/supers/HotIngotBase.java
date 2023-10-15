@@ -1,4 +1,4 @@
-package com.thathitmann.runicsmithing.item.custom;
+package com.thathitmann.runicsmithing.item.custom.supers;
 
 
 import net.minecraft.world.item.Item;

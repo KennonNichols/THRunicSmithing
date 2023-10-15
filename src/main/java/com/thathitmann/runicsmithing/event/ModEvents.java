@@ -1,11 +1,7 @@
 package com.thathitmann.runicsmithing.event;
 
 import com.thathitmann.runicsmithing.RunicSmithing;
-import com.thathitmann.runicsmithing.item.custom.HotIngotBase;
-import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.tags.TagKey;
-import net.minecraft.world.entity.EntityEvent;
+import com.thathitmann.runicsmithing.item.custom.supers.HotIngotBase;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;

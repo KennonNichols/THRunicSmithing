@@ -1,10 +1,10 @@
-package com.thathitmann.runicsmithing.item.custom;
+package com.thathitmann.runicsmithing.item.custom.supers;
 
 import net.minecraft.world.item.Item;
 
 public class RunicSmithingMaterial {
-    private Item associatedIngot;
-    private String materialName;
+    private final Item associatedIngot;
+    private final String materialName;
 
 
     public Item getAssociatedIngot() {return associatedIngot;}

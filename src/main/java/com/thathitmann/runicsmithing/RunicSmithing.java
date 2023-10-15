@@ -1,18 +1,16 @@
 package com.thathitmann.runicsmithing;
 
-import com.mojang.logging.LogUtils;
+//import com.mojang.logging.LogUtils;
 import com.thathitmann.runicsmithing.block.ModBlocks;
 import com.thathitmann.runicsmithing.block.entity.ModBlockEntities;
 import com.thathitmann.runicsmithing.item.ModItems;
 import com.thathitmann.runicsmithing.screen.CoreForgeBlockScreen;
-import com.thathitmann.runicsmithing.screen.ForgeBlockMenu;
 import com.thathitmann.runicsmithing.screen.ForgeBlockScreen;
 import com.thathitmann.runicsmithing.screen.ModMenuTypes;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
-import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
@@ -22,7 +20,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import org.slf4j.Logger;
+//import org.slf4j.Logger;
 
 // The value here should match an entry in the META-INF/mods.toml file
 @Mod(RunicSmithing.MOD_ID)
@@ -31,7 +29,7 @@ public class RunicSmithing
     // Define mod id in a common place for everything to reference
     public static final String MOD_ID = "runicsmithing";
     // Directly reference a slf4j logger
-    private static final Logger LOGGER = LogUtils.getLogger();
+    //private static final Logger LOGGER = LogUtils.getLogger();
     public RunicSmithing()
     {
         //Create Event Bus

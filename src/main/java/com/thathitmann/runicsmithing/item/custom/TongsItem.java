@@ -1,16 +1,13 @@
 package com.thathitmann.runicsmithing.item.custom;
 
+import com.thathitmann.runicsmithing.item.custom.supers.THRSItemBase;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.registries.ForgeRegistries;
-
-
-import java.util.List;
+import org.jetbrains.annotations.NotNull;
 
 public class TongsItem extends THRSItemBase {
 
@@ -21,7 +18,7 @@ public class TongsItem extends THRSItemBase {
 
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand interactionHand) {
+    public @NotNull InteractionResultHolder<ItemStack> use(Level level, @NotNull Player player, @NotNull InteractionHand interactionHand) {
         if (!level.isClientSide()) {
             player.sendSystemMessage(Component.literal("*Click, clack*"));
         }

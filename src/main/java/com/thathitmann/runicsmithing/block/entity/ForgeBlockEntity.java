@@ -1,9 +1,8 @@
 package com.thathitmann.runicsmithing.block.entity;
 
 
-import com.thathitmann.runicsmithing.item.custom.ForgeIngotLookup;
-import com.thathitmann.runicsmithing.item.custom.HotIngotBase;
-import com.thathitmann.runicsmithing.screen.CoreForgeBlockMenu;
+import com.thathitmann.runicsmithing.item.custom.supers.ForgeIngotLookup;
+import com.thathitmann.runicsmithing.item.custom.supers.HotIngotBase;
 import com.thathitmann.runicsmithing.screen.ForgeBlockMenu;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.MenuProvider;
@@ -19,7 +18,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import static com.thathitmann.runicsmithing.RunicSmithing.forgeableTag;
 import static com.thathitmann.runicsmithing.block.custom.ForgeBlock.LIT;
 
 public class ForgeBlockEntity extends ForgeBlockEntityParent implements MenuProvider {
@@ -32,7 +30,7 @@ public class ForgeBlockEntity extends ForgeBlockEntityParent implements MenuProv
 
     @Nullable
     @Override
-    public AbstractContainerMenu createMenu(int id, Inventory inventory, Player player) {
+    public AbstractContainerMenu createMenu(int id, @NotNull Inventory inventory, @NotNull Player player) {
         return new ForgeBlockMenu(id, inventory, this, this.data);
     }
 
@@ -113,7 +111,7 @@ public class ForgeBlockEntity extends ForgeBlockEntityParent implements MenuProv
         Item itemInInput = stack.getItem();
         if (itemInOutput instanceof HotIngotBase) {
             Item coolingResult = ((HotIngotBase)itemInOutput).getCoolingResult();
-            if (coolingResult == itemInInput) {return true;}
+            return coolingResult == itemInInput;
         }
         return false;
     }

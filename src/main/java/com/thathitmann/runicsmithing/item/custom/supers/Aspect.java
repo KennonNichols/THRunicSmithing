@@ -1,8 +1,8 @@
-package com.thathitmann.runicsmithing.item.custom;
+package com.thathitmann.runicsmithing.item.custom.supers;
 
 public class Aspect {
-    private  String name;
-    private int qualityLevel;
+    private final String name;
+    private final int qualityLevel;
     public String getName() {return name;}
     public int getQualityLevel() {return qualityLevel;}
 

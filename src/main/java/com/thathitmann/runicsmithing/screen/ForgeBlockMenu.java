@@ -9,9 +9,9 @@ import net.minecraft.world.inventory.*;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.items.SlotItemHandler;
-import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.NotNull;
 
 
 public class ForgeBlockMenu extends AbstractContainerMenu {
@@ -34,7 +34,7 @@ public class ForgeBlockMenu extends AbstractContainerMenu {
         addPlayerHotbar(inventory);
         //Create slots
 
-        this.blockEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).ifPresent(handler -> {
+        this.blockEntity.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(handler -> {
             this.addSlot(new SlotItemHandler(handler, 0, 42, 15));
             this.addSlot(new SlotItemHandler(handler, 1, 116, 15));
         });
@@ -61,7 +61,7 @@ public class ForgeBlockMenu extends AbstractContainerMenu {
 
         int progressArrowSize = 64;
 
-        return maxProgress != 0 && progress != 0 ? progress * progressArrowSize / maxProgress : 0;
+        return progress != 0 ? progress * progressArrowSize / maxProgress : 0;
     }
     public int getScaledBurnTime() {
         int progress = this.data.get(2);
@@ -76,7 +76,7 @@ public class ForgeBlockMenu extends AbstractContainerMenu {
     //region Quick stack
     // CREDIT GOES TO: diesieben07 | https://github.com/diesieben07/SevenCommons
     // must assign a slot number to each of the slots used by the GUI.
-    // For this container, we can see both the tile inventory's slots as well as the player inventory slots and the hotbar.
+    // For this container, we can see both the tile inventory's slots and the player inventory slots and the hotbar.
     // Each time we add a Slot to the container, it automatically increases the slotIndex, which means
     //  0 - 8 = hotbar slots (which will map to the InventoryPlayer slot numbers 0 - 8)
     //  9 - 35 = player inventory slots (which map to the InventoryPlayer slot numbers 9 - 35)
@@ -93,9 +93,9 @@ public class ForgeBlockMenu extends AbstractContainerMenu {
     private static final int TE_INVENTORY_SLOT_COUNT = 2;  // must be the number of slots you have!
 
     @Override
-    public ItemStack quickMoveStack(Player playerIn, int index) {
+    public @NotNull ItemStack quickMoveStack(@NotNull Player playerIn, int index) {
         Slot sourceSlot = slots.get(index);
-        if (sourceSlot == null || !sourceSlot.hasItem()) return ItemStack.EMPTY;  //EMPTY_ITEM
+        if (!sourceSlot.hasItem()) return ItemStack.EMPTY;  //EMPTY_ITEM
         ItemStack sourceStack = sourceSlot.getItem();
         ItemStack copyOfSourceStack = sourceStack.copy();
 
@@ -128,7 +128,7 @@ public class ForgeBlockMenu extends AbstractContainerMenu {
 
 
     @Override
-    public boolean stillValid(Player player) {
+    public boolean stillValid(@NotNull Player player) {
         return stillValid(ContainerLevelAccess.create(level, blockEntity.getBlockPos()), player, ModBlocks.FORGE_BLOCK.get());
     }
 

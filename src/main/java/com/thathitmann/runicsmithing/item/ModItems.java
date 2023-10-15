@@ -2,8 +2,8 @@ package com.thathitmann.runicsmithing.item;
 
 import com.thathitmann.runicsmithing.RunicSmithing;
 import com.thathitmann.runicsmithing.item.custom.*;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.CreativeModeTab;
+import com.thathitmann.runicsmithing.item.custom.supers.HotIngotBase;
+import com.thathitmann.runicsmithing.item.custom.supers.Material;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeType;

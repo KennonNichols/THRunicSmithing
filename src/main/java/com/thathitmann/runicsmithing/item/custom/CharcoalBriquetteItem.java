@@ -1,6 +1,8 @@
 package com.thathitmann.runicsmithing.item.custom;
 
-public class CharcoalBriquetteItem extends THRSItemBase{
+import com.thathitmann.runicsmithing.item.custom.supers.THRSItemBase;
+
+public class CharcoalBriquetteItem extends THRSItemBase {
 
     public CharcoalBriquetteItem(Properties properties) {
         super(properties);
