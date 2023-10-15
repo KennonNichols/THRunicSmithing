@@ -7,6 +7,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -18,13 +19,12 @@ public class THRSItemBase extends Item {
     }
 
     //region ToolTip
-    protected String tooltip = "";
-    protected String baseTooltip = "";
+    protected String tooltip;
     @Override
-    public void appendHoverText(ItemStack itemStack, @Nullable Level level, List<Component> components, TooltipFlag flag) {
-        if (tooltip != "" || baseTooltip != "") {
+    public void appendHoverText(@NotNull ItemStack itemStack, @Nullable Level level, @NotNull List<Component> components, @NotNull TooltipFlag flag) {
+        if (tooltip != null) {
             if (Screen.hasShiftDown()) {
-                components.add(Component.literal(baseTooltip + tooltip).withStyle(ChatFormatting.DARK_PURPLE));
+                components.add(Component.literal(tooltip).withStyle(ChatFormatting.DARK_PURPLE));
             } else {
                 components.add(Component.literal("Press SHIFT for more info").withStyle(ChatFormatting.AQUA));
             }

@@ -3,8 +3,10 @@ package com.thathitmann.runicsmithing.block.entity;
 import com.thathitmann.runicsmithing.item.custom.Aspect;
 import com.thathitmann.runicsmithing.item.custom.ForgeIngotLookup;
 import com.thathitmann.runicsmithing.item.custom.HotIngotBase;
+import com.thathitmann.runicsmithing.item.custom.SmithingChainItem;
 import com.thathitmann.runicsmithing.screen.CoreForgeBlockMenu;
 import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
@@ -14,7 +16,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import org.checkerframework.checker.units.qual.A;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -35,7 +36,7 @@ public class CoreForgeBlockEntity extends ForgeBlockEntityParent implements Menu
 
     @Nullable
     @Override
-    public AbstractContainerMenu createMenu(int id, Inventory inventory, Player player) {
+    public AbstractContainerMenu createMenu(int id, @NotNull Inventory inventory, @NotNull Player player) {
         return new CoreForgeBlockMenu(id, inventory, this, this.data);
     }
 
@@ -53,10 +54,7 @@ public class CoreForgeBlockEntity extends ForgeBlockEntityParent implements Menu
         if (entity.burnTime > 0) {
             entity.burnTime--;
             if (entity.heatPercentage < 100) {
-                if (rand.nextFloat() > 0.66f) {
-                    entity.heatPercentage++;
-                }
-
+                entity.heatPercentage++;
             }
 
 
@@ -129,14 +127,17 @@ public class CoreForgeBlockEntity extends ForgeBlockEntityParent implements Menu
             Item forgeOutput = ForgeIngotLookup.forgeHeatingLookup.get(forgeInput);
 
 
-            if (forgeOutput instanceof HotIngotBase) {
-                ((HotIngotBase) forgeOutput).addAspect(getDepthAspect(entity.getBlockState()));
-            }
 
 
 
             entity.itemHandler.extractItem(0, 1, false);
-            entity.itemHandler.setStackInSlot(1, new ItemStack(forgeOutput, entity.itemHandler.getStackInSlot(1).getCount() + 1));
+            ItemStack outputItemStack = new ItemStack(forgeOutput, entity.itemHandler.getStackInSlot(1).getCount() + 1);
+            if (forgeOutput instanceof SmithingChainItem) {
+                CompoundTag tag = ((SmithingChainItem) forgeOutput).buildNBTAspectTag(outputItemStack, getDepthAspect(entity.getBlockState()).getQualityLevel(), getDepthAspect(entity.getBlockState()).getName());
+                outputItemStack.setTag(tag);
+            }
+            entity.itemHandler.setStackInSlot(1, outputItemStack);
+
         }
     }
     private static boolean hasRecipe(@NotNull ForgeBlockEntityParent entity, SimpleContainer inventory) {
@@ -150,11 +151,13 @@ public class CoreForgeBlockEntity extends ForgeBlockEntityParent implements Menu
         if (inventory.getItem(1).isEmpty()) {return true;}
 
 
+
+
         Item itemInOutput = inventory.getItem(1).getItem();
         Item itemInInput = stack.getItem();
         if (itemInOutput instanceof HotIngotBase) {
             Item coolingResult = ((HotIngotBase)itemInOutput).getCoolingResult();
-            if (coolingResult == itemInInput) {return true;}
+            return coolingResult == itemInInput;
         }
         return false;
     }
