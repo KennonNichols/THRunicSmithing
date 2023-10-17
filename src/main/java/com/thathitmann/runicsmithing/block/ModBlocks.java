@@ -3,6 +3,8 @@ package com.thathitmann.runicsmithing.block;
 import com.thathitmann.runicsmithing.RunicSmithing;
 import com.thathitmann.runicsmithing.block.custom.CoreForgeBlock;
 import com.thathitmann.runicsmithing.block.custom.ForgeBlock;
+import com.thathitmann.runicsmithing.block.custom.StoneAnvilBlock;
+import com.thathitmann.runicsmithing.block.custom.WoodenBasinBlock;
 import com.thathitmann.runicsmithing.item.ModCreativeTab;
 import com.thathitmann.runicsmithing.item.ModItems;
 import net.minecraft.world.item.BlockItem;
@@ -47,6 +49,14 @@ public class ModBlocks {
 
     public static final RegistryObject<Block> CORE_FORGE_BLOCK = registerBlock("core_forge_block",
             () -> new CoreForgeBlock(BlockBehaviour.Properties.of(Material.STONE).strength(6f).requiresCorrectToolForDrops().lightLevel(state -> state.getValue(CoreForgeBlock.LIT) ? 15 : 0)),
+            ModCreativeTab.TAB);
+
+    public static final RegistryObject<Block> STONE_ANVIL_BLOCK = registerBlock("stone_anvil_block",
+            () -> new StoneAnvilBlock(BlockBehaviour.Properties.of(Material.STONE).strength(6f).requiresCorrectToolForDrops().noOcclusion()),
+            ModCreativeTab.TAB);
+
+    public static final RegistryObject<Block> WOODEN_BASIN_BLOCK = registerBlock("wooden_basin_block",
+            () -> new WoodenBasinBlock(BlockBehaviour.Properties.of(Material.WOOD).strength(2f).noOcclusion()),
             ModCreativeTab.TAB);
 
 

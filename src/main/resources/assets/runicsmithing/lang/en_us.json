@@ -11,10 +11,11 @@
   "item.runicsmithing.hot_netherite_ingot": "Hot Netherite",
   "item.runicsmithing.hot_diamond": "Hot Diamond",
 
-
   "block.runicsmithing.forge_block": "Smithing Forge",
   "block.runicsmithing.core_forge_block": "Core Forge",
 
+  "block.runicsmithing.stone_anvil_block": "Stone Anvil",
+  "block.runicsmithing.wooden_basin_block": "Wooden Basin",
 
   "itemGroup.runicsmithingtab": "Runic Smithing"
 

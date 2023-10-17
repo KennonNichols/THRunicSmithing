@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "filled=false": {
+      "model": "runicsmithing:block/wooden_basin_block"
+    },
+    "filled=true": {
+      "model": "runicsmithing:block/wooden_basin_block_filled"
+    }
+  }
+}

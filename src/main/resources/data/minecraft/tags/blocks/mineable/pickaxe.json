@@ -1,6 +1,8 @@
 {
   "replace": false,
   "values": [
-    "runicsmithing:forge_block"
+    "runicsmithing:forge_block",
+    "runicsmithing:core_forge_block",
+    "runicsmithing:stone_anvil_block"
   ]
 }

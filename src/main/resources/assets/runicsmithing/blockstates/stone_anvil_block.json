@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "runicsmithing:block/stone_anvil_block",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "runicsmithing:block/stone_anvil_block"
+    },
+    "facing=south": {
+      "model": "runicsmithing:block/stone_anvil_block",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "runicsmithing:block/stone_anvil_block",
+      "y": 270
+    }
+  }
+}
