@@ -4,6 +4,7 @@ package com.thathitmann.runicsmithing;
 import com.thathitmann.runicsmithing.block.ModBlocks;
 import com.thathitmann.runicsmithing.block.entity.ModBlockEntities;
 import com.thathitmann.runicsmithing.item.ModItems;
+import com.thathitmann.runicsmithing.recipe.ModRecipes;
 import com.thathitmann.runicsmithing.screen.CoreForgeBlockScreen;
 import com.thathitmann.runicsmithing.screen.ForgeBlockScreen;
 import com.thathitmann.runicsmithing.screen.ModMenuTypes;
@@ -42,6 +43,8 @@ public class RunicSmithing
         ModBlockEntities.register(modEventBus);
         //Register the menus
         ModMenuTypes.register(modEventBus);
+        //Register the recipes
+        ModRecipes.register(modEventBus);
         // Register the commonSetup method for modloading
         modEventBus.addListener(this::commonSetup);
         // Register ourselves for server and other game events we are interested in

@@ -1,0 +1,11 @@
+{
+  "type": "runicsmithing:forge_heating",
+  "ingredients": [
+    {
+      "item": "minecraft:netherite_ingot"
+    }
+  ],
+  "output": {
+    "item": "runicsmithing:hot_netherite_ingot"
+  }
+}

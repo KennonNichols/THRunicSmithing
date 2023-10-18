@@ -1,0 +1,11 @@
+{
+  "type": "runicsmithing:forge_heating",
+  "ingredients": [
+    {
+      "item": "minecraft:diamond"
+    }
+  ],
+  "output": {
+    "item": "runicsmithing:hot_diamond"
+  }
+}

@@ -1,9 +1,8 @@
 package com.thathitmann.runicsmithing.block.entity;
 
 import com.thathitmann.runicsmithing.item.custom.supers.Aspect;
-import com.thathitmann.runicsmithing.item.custom.supers.ForgeIngotLookup;
-import com.thathitmann.runicsmithing.item.custom.supers.HotIngotBase;
 import com.thathitmann.runicsmithing.item.custom.supers.SmithingChainItem;
+import com.thathitmann.runicsmithing.recipe.ForgeRecipe;
 import com.thathitmann.runicsmithing.screen.CoreForgeBlockMenu;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -19,7 +18,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import static com.thathitmann.runicsmithing.RunicSmithing.forgeableTag;
+import java.util.Optional;
+
 import static com.thathitmann.runicsmithing.block.custom.CoreForgeBlock.DEPTH;
 import static com.thathitmann.runicsmithing.block.custom.ForgeBlock.LIT;
 
@@ -124,9 +124,9 @@ public class CoreForgeBlockEntity extends ForgeBlockEntityParent implements Menu
     private static void craftItem(ForgeBlockEntityParent entity, SimpleContainer inventory) {
         if (hasRecipe(entity, inventory)) {
             Item forgeInput = inventory.getItem(0).getItem();
-            Item forgeOutput = ForgeIngotLookup.forgeHeatingLookup.get(forgeInput);
-
-
+            Level level = entity.getLevel();
+            Optional<ForgeRecipe> recipe = level.getRecipeManager().getRecipeFor(ForgeRecipe.Type.INSTANCE, inventory, level);
+            Item forgeOutput = recipe.get().getResultItem().getItem();
 
 
 
@@ -141,25 +141,14 @@ public class CoreForgeBlockEntity extends ForgeBlockEntityParent implements Menu
         }
     }
     private static boolean hasRecipe(@NotNull ForgeBlockEntityParent entity, SimpleContainer inventory) {
-        boolean hasValidMaterialInFirstSlot;
-        //Take any forgeable entity
-            hasValidMaterialInFirstSlot = entity.itemHandler.getStackInSlot(0).is(forgeableTag);
+        Level level = entity.getLevel();
+        Optional<ForgeRecipe> recipe = level.getRecipeManager().getRecipeFor(ForgeRecipe.Type.INSTANCE, inventory, level);
 
-        return hasValidMaterialInFirstSlot && canInsertAmountIntoOutput(inventory) && canInsertItemIntoOutputSlot(inventory, entity.itemHandler.getStackInSlot(0));
+
+        return recipe.isPresent() && canInsertAmountIntoOutput(inventory) && canInsertItemIntoOutputSlot(inventory, recipe.get().getResultItem());
     }
     private static boolean canInsertItemIntoOutputSlot(@NotNull SimpleContainer inventory, ItemStack stack) {
-        if (inventory.getItem(1).isEmpty()) {return true;}
-
-
-
-
-        Item itemInOutput = inventory.getItem(1).getItem();
-        Item itemInInput = stack.getItem();
-        if (itemInOutput instanceof HotIngotBase) {
-            Item coolingResult = ((HotIngotBase)itemInOutput).getCoolingResult();
-            return coolingResult == itemInInput;
-        }
-        return false;
+        return inventory.getItem(1).isEmpty() || inventory.getItem(1).getItem() == stack.getItem();
     }
     private static boolean canInsertAmountIntoOutput(@NotNull SimpleContainer inventory) {
         return inventory.getItem(1).getMaxStackSize() > inventory.getItem(1).getCount();
