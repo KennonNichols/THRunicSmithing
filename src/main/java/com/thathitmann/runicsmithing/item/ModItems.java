@@ -3,7 +3,9 @@ package com.thathitmann.runicsmithing.item;
 import com.thathitmann.runicsmithing.RunicSmithing;
 import com.thathitmann.runicsmithing.item.custom.*;
 import com.thathitmann.runicsmithing.item.custom.supers.HotIngotBase;
+import com.thathitmann.runicsmithing.item.custom.supers.IronHammerItem;
 import com.thathitmann.runicsmithing.item.custom.supers.Material;
+import com.thathitmann.runicsmithing.item.custom.supers.StoneHammerItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeType;
@@ -32,10 +34,10 @@ public class ModItems {
             () -> new GlovesItem(new Item.Properties().tab(ModCreativeTab.TAB)));
     //Hammer
     public static final RegistryObject<Item> IRON_SMITHING_HAMMER = ITEMS.register("iron_smithing_hammer",
-            () -> new Item(new Item.Properties().tab(ModCreativeTab.TAB)));
+            () -> new IronHammerItem(new Item.Properties().tab(ModCreativeTab.TAB)));
     //Stone Hammer
     public static final RegistryObject<Item> STONE_SMITHING_HAMMER = ITEMS.register("stone_smithing_hammer",
-            () -> new Item(new Item.Properties().tab(ModCreativeTab.TAB)));
+            () -> new StoneHammerItem(new Item.Properties().tab(ModCreativeTab.TAB)));
     //Charcoal Briquette
     public static final RegistryObject<Item> CHARCOAL_BRIQUETTE = ITEMS.register("charcoal_briquette",
             () -> new CharcoalBriquetteItem(new Item.Properties().tab(ModCreativeTab.TAB)) {

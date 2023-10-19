@@ -7,6 +7,7 @@ import com.thathitmann.runicsmithing.item.ModItems;
 import com.thathitmann.runicsmithing.recipe.ModRecipes;
 import com.thathitmann.runicsmithing.screen.CoreForgeBlockScreen;
 import com.thathitmann.runicsmithing.screen.ForgeBlockScreen;
+import com.thathitmann.runicsmithing.screen.HammeringScreen;
 import com.thathitmann.runicsmithing.screen.ModMenuTypes;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.resources.ResourceLocation;
@@ -59,7 +60,6 @@ public class RunicSmithing
     }
 
     public static final TagKey<Item> burningHotTag = ItemTags.create(new ResourceLocation("runicsmithing", "burninghot"));
-    public static final TagKey<Item> forgeableTag = ItemTags.create(new ResourceLocation("runicsmithing", "forgeable"));
     public static final TagKey<Item> heatInsulatingTag = ItemTags.create(new ResourceLocation("runicsmithing", "heatinsulating"));
 
     // You can use EventBusSubscriber to automatically register all static methods in the class annotated with @SubscribeEvent
@@ -71,6 +71,7 @@ public class RunicSmithing
         {
             MenuScreens.register(ModMenuTypes.FORGE_BLOCK_MENU.get(), ForgeBlockScreen::new);
             MenuScreens.register(ModMenuTypes.CORE_FORGE_BLOCK_MENU.get(), CoreForgeBlockScreen::new);
+            MenuScreens.register(ModMenuTypes.HAMMERING_MENU.get(), HammeringScreen::new);
         }
     }
 }

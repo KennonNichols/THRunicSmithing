@@ -1,12 +1,12 @@
 {
-	"credit": "Made with Blockbench",
+	"ambientocclusion": false,
 	"texture_size": [32, 32],
 	"textures": {
 		"0": "runicsmithing:block/wooden_basin_foot",
 		"1": "runicsmithing:block/wooden_basin_long_wall",
 		"2": "runicsmithing:block/wooden_basin_short_wall",
 		"3": "runicsmithing:block/wooden_basin_floor",
-		"4": "runicsmithing:block/water_texture",
+		"water": "runicsmithing:block/water_texture",
 		"particle": "runicsmithing:block/wooden_basin_foot"
 	},
 	"elements": [
@@ -68,14 +68,6 @@
 			}
 		},
 		{
-			"from": [2, 7, 2],
-			"to": [14, 7, 14],
-			"rotation": {"angle": 0, "axis": "y", "origin": [0, 0, -4]},
-			"faces": {
-				"up": {"uv": [12, 12, 0, 0], "texture": "#4"}
-			}
-		},
-		{
 			"from": [1, 2, 1],
 			"to": [15, 8, 2],
 			"faces": {
@@ -121,6 +113,13 @@
 				"west": {"uv": [0, 3, 6, 6], "texture": "#2"},
 				"up": {"uv": [0.5, 12, 0, 6], "texture": "#2"},
 				"down": {"uv": [6.5, 0, 6, 6], "texture": "#2"}
+			}
+		},
+		{
+			"from": [ 2, 4, 2 ],
+			"to": [ 14, 7, 14 ],
+			"faces": {
+				"up": {"uv": [12, 12, 0, 0],  "texture": "#water", "tintindex": 0 }
 			}
 		}
 	],
