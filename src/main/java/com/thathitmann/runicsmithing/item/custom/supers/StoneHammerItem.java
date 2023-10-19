@@ -15,7 +15,7 @@ public class StoneHammerItem extends ForgeHammer {
 
     public StoneHammerItem(Properties properties) {
         super(properties);
-        this.tooltip = "Hold in offhand with ingot in mainhand, and click on anvil to forge the ingot into a tool. Only works with stone anvil.";
+        this.tooltip = "Hold in offhand with ingot in mainhand, and sneak-click on anvil to forge the ingot into a tool. Only works with stone anvil.";
     }
 
 
@@ -29,5 +29,4 @@ public class StoneHammerItem extends ForgeHammer {
         }
         return InteractionResult.PASS;
     }
-
 }

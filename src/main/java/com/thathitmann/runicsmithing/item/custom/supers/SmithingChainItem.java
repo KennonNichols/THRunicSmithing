@@ -1,16 +1,26 @@
 package com.thathitmann.runicsmithing.item.custom.supers;
 
+import com.thathitmann.runicsmithing.block.ModBlocks;
+import com.thathitmann.runicsmithing.block.custom.WoodenBasinBlock;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.network.NetworkHooks;
+import org.jetbrains.annotations.Debug;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -81,6 +91,7 @@ public class SmithingChainItem extends Item {
 
 
 
+    public Item getCoolingResult() {return null;}
 
     @Override
     public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level level, @NotNull Player player, @NotNull InteractionHand interactionHand) {
@@ -111,6 +122,33 @@ public class SmithingChainItem extends Item {
 
     }
 
+    @Override
+    public InteractionResult useOn(UseOnContext pContext) {
+        BlockPos blockpos = pContext.getClickedPos();
+        Level level = pContext.getLevel();
+        Player player = pContext.getPlayer();
+        if (!level.isClientSide() && player.getMainHandItem().getItem() == this) {
+
+            BlockState interactedState = level.getBlockState(blockpos);
+
+            //If clicking on a filled wooden basin
+            if (((interactedState.is(ModBlocks.WOODEN_BASIN_BLOCK.get())))) {
+                if (interactedState.getValue(WoodenBasinBlock.FILLED)) {
+                    coolInMainHand(player);
+                }
+            }
+            else if (interactedState.is(Blocks.WATER_CAULDRON)) {
+                coolInMainHand(player);
+            }
+        }
+        return InteractionResult.PASS;
+    }
+
+
+
+    private void coolInMainHand(Player player) {
+        player.getInventory().setItem(player.getInventory().selected, new ItemStack(this.getCoolingResult(), player.getMainHandItem().getCount()));
+    }
 
 
 

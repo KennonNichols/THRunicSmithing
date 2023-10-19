@@ -14,7 +14,7 @@ public class IronHammerItem extends ForgeHammer {
     public IronHammerItem(Properties properties) {
         super(properties);
         isAdvancedHammer = true;
-        this.tooltip = "Hold in off hand with ingot in main hand, and click on anvil to forge the ingot into a tool. Gives +1 quality per cycle to tool when forged on a metal anvil.";
+        this.tooltip = "Hold in off hand with ingot in main hand, and sneak-click on anvil to forge the ingot into a tool. Gives +1 quality per cycle to tool when forged on a metal anvil.";
     }
 
     @Override
