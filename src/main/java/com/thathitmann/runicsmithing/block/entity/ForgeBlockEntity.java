@@ -3,6 +3,7 @@ package com.thathitmann.runicsmithing.block.entity;
 
 import com.thathitmann.runicsmithing.item.ModItems;
 import com.thathitmann.runicsmithing.item.custom.supers.HotIngotBase;
+import com.thathitmann.runicsmithing.recipe.ForgeRecipe;
 import com.thathitmann.runicsmithing.screen.ForgeBlockMenu;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.MenuProvider;
@@ -17,6 +18,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Optional;
 
 import static com.thathitmann.runicsmithing.block.custom.ForgeBlock.LIT;
 
@@ -89,7 +92,9 @@ public class ForgeBlockEntity extends ForgeBlockEntityParent implements MenuProv
 
     private static void craftItem(ForgeBlockEntityParent entity, SimpleContainer inventory) {
         if (hasRecipe(entity, inventory)) {
-            Item forgeOutput = ModItems.HOT_COPPER_INGOT.get();
+            Level level = entity.getLevel();
+            Optional<ForgeRecipe> recipe = level.getRecipeManager().getRecipeFor(ForgeRecipe.Type.INSTANCE, inventory, level);
+            Item forgeOutput = recipe.get().getResultItem().getItem();
             entity.itemHandler.extractItem(0, 1, false);
             entity.itemHandler.setStackInSlot(1, new ItemStack(forgeOutput, entity.itemHandler.getStackInSlot(1).getCount() + 1));
         }

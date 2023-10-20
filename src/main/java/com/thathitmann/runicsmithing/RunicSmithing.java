@@ -3,7 +3,9 @@ package com.thathitmann.runicsmithing;
 //import com.mojang.logging.LogUtils;
 import com.thathitmann.runicsmithing.block.ModBlocks;
 import com.thathitmann.runicsmithing.block.entity.ModBlockEntities;
+import com.thathitmann.runicsmithing.item.ModCreativeTab;
 import com.thathitmann.runicsmithing.item.ModItems;
+import com.thathitmann.runicsmithing.item.custom.TongsItem;
 import com.thathitmann.runicsmithing.recipe.ModRecipes;
 import com.thathitmann.runicsmithing.screen.CoreForgeBlockScreen;
 import com.thathitmann.runicsmithing.screen.ForgeBlockScreen;
@@ -55,7 +57,6 @@ public class RunicSmithing
 
     private void commonSetup(final FMLCommonSetupEvent event)
     {
-
 
     }
 
