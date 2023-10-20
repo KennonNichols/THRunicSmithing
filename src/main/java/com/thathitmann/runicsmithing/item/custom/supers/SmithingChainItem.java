@@ -31,6 +31,8 @@ public class SmithingChainItem extends Item {
 
 
 
+    protected RunicSmithingMaterial material;
+
 
     protected String tooltip = "";
 
