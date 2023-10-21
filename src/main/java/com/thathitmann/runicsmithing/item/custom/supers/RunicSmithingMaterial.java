@@ -5,14 +5,17 @@ import net.minecraft.world.item.Item;
 public class RunicSmithingMaterial {
     private final Item associatedIngot;
     private final String materialName;
+    private final Boolean isPrimitive;
 
 
     public Item getAssociatedIngot() {return associatedIngot;}
-    public String getMaterialName() {return materialName;}
 
-    public RunicSmithingMaterial(Item associatedIngot, String materialName){
+    public Boolean getPrimitive() {return isPrimitive;}
+
+    public RunicSmithingMaterial(Item associatedIngot, String materialName, Boolean isPrimitive){
         this.associatedIngot = associatedIngot;
         this.materialName = materialName;
+        this.isPrimitive = isPrimitive;
     }
 
 

@@ -1,8 +1,10 @@
 package com.thathitmann.runicsmithing.block.entity;
 
+import com.thathitmann.runicsmithing.generators.RSDynamicRecipeRegistry;
+import com.thathitmann.runicsmithing.generators.RSRecipeCategory;
 import com.thathitmann.runicsmithing.item.custom.supers.Aspect;
 import com.thathitmann.runicsmithing.item.custom.supers.SmithingChainItem;
-import com.thathitmann.runicsmithing.recipe.ForgeRecipe;
+//import com.thathitmann.runicsmithing.recipe.ForgeRecipe;
 import com.thathitmann.runicsmithing.screen.CoreForgeBlockMenu;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -123,13 +125,19 @@ public class CoreForgeBlockEntity extends ForgeBlockEntityParent implements Menu
 
     private static void craftItem(ForgeBlockEntityParent entity, SimpleContainer inventory) {
         if (hasRecipe(entity, inventory)) {
-            Item forgeInput = inventory.getItem(0).getItem();
+            //Old json recipe
+            /*
             Level level = entity.getLevel();
             Optional<ForgeRecipe> recipe = level.getRecipeManager().getRecipeFor(ForgeRecipe.Type.INSTANCE, inventory, level);
             Item forgeOutput = recipe.get().getResultItem().getItem();
+            */
 
 
+            //New dynamic recipe
+            Item forgeOutput = RSDynamicRecipeRegistry.getRecipeResult(RSRecipeCategory.FORGE_HEATING, inventory.getItem(0).getItem());
 
+
+            //Switch the item and add NBT tags
             entity.itemHandler.extractItem(0, 1, false);
             ItemStack outputItemStack = new ItemStack(forgeOutput, entity.itemHandler.getStackInSlot(1).getCount() + 1);
             if (forgeOutput instanceof SmithingChainItem) {
@@ -141,14 +149,19 @@ public class CoreForgeBlockEntity extends ForgeBlockEntityParent implements Menu
         }
     }
     private static boolean hasRecipe(@NotNull ForgeBlockEntityParent entity, SimpleContainer inventory) {
-        Level level = entity.getLevel();
-        Optional<ForgeRecipe> recipe = level.getRecipeManager().getRecipeFor(ForgeRecipe.Type.INSTANCE, inventory, level);
+
+        //If not valid, return false immediately
+        if (!RSDynamicRecipeRegistry.isItemAValidInput(inventory.getItem(0).getItem(), RSRecipeCategory.FORGE_HEATING)) {
+            return false;
+        }
+
+        Item output = RSDynamicRecipeRegistry.getRecipeResult(RSRecipeCategory.FORGE_HEATING, inventory.getItem(0).getItem());
 
 
-        return recipe.isPresent() && canInsertAmountIntoOutput(inventory) && canInsertItemIntoOutputSlot(inventory, recipe.get().getResultItem());
+        return canInsertAmountIntoOutput(inventory) && canInsertItemIntoOutputSlot(inventory, output);
     }
-    private static boolean canInsertItemIntoOutputSlot(@NotNull SimpleContainer inventory, ItemStack stack) {
-        return inventory.getItem(1).isEmpty() || inventory.getItem(1).getItem() == stack.getItem();
+    private static boolean canInsertItemIntoOutputSlot(@NotNull SimpleContainer inventory, Item stack) {
+        return inventory.getItem(1).isEmpty() || inventory.getItem(1).getItem() == stack;
     }
     private static boolean canInsertAmountIntoOutput(@NotNull SimpleContainer inventory) {
         return inventory.getItem(1).getMaxStackSize() > inventory.getItem(1).getCount();

@@ -94,6 +94,7 @@ public class SmithingChainItem extends Item {
 
 
     public Item getCoolingResult() {return null;}
+    public RunicSmithingMaterial getMaterial() {return material;}
 
     @Override
     public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level level, @NotNull Player player, @NotNull InteractionHand interactionHand) {

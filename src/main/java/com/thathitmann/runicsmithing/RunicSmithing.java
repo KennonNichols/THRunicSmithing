@@ -3,10 +3,9 @@ package com.thathitmann.runicsmithing;
 //import com.mojang.logging.LogUtils;
 import com.thathitmann.runicsmithing.block.ModBlocks;
 import com.thathitmann.runicsmithing.block.entity.ModBlockEntities;
-import com.thathitmann.runicsmithing.item.ModCreativeTab;
+import com.thathitmann.runicsmithing.generators.RSDynamicRecipeRegistry;
 import com.thathitmann.runicsmithing.item.ModItems;
-import com.thathitmann.runicsmithing.item.custom.TongsItem;
-import com.thathitmann.runicsmithing.recipe.ModRecipes;
+//import com.thathitmann.runicsmithing.recipe.ModRecipes;
 import com.thathitmann.runicsmithing.screen.CoreForgeBlockScreen;
 import com.thathitmann.runicsmithing.screen.ForgeBlockScreen;
 import com.thathitmann.runicsmithing.screen.HammeringScreen;
@@ -24,6 +23,8 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+
+import javax.json.JsonReader;
 //import org.slf4j.Logger;
 
 // The value here should match an entry in the META-INF/mods.toml file
@@ -38,6 +39,7 @@ public class RunicSmithing
     {
         //Create Event Bus
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
+
         //Register items
         ModItems.register(modEventBus);
         //Register blocks
@@ -47,17 +49,20 @@ public class RunicSmithing
         //Register the menus
         ModMenuTypes.register(modEventBus);
         //Register the recipes
-        ModRecipes.register(modEventBus);
+        //ModRecipes.register(modEventBus);
         // Register the commonSetup method for modloading
         modEventBus.addListener(this::commonSetup);
         // Register ourselves for server and other game events we are interested in
         MinecraftForge.EVENT_BUS.register(this);
+
+
     }
 
 
     private void commonSetup(final FMLCommonSetupEvent event)
     {
-
+        //Cook the recipes on world open
+        RSDynamicRecipeRegistry.cook();
     }
 
     public static final TagKey<Item> burningHotTag = ItemTags.create(new ResourceLocation("runicsmithing", "burninghot"));

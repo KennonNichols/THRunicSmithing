@@ -1,11 +1,15 @@
 package com.thathitmann.runicsmithing.block.entity;
 
 
+import com.thathitmann.runicsmithing.generators.RSDynamicRecipeRegistry;
+import com.thathitmann.runicsmithing.generators.RSRecipeCategory;
 import com.thathitmann.runicsmithing.item.ModItems;
 import com.thathitmann.runicsmithing.item.custom.supers.HotIngotBase;
-import com.thathitmann.runicsmithing.recipe.ForgeRecipe;
+import com.thathitmann.runicsmithing.item.custom.supers.SmithingChainItem;
+//import com.thathitmann.runicsmithing.recipe.ForgeRecipe;
 import com.thathitmann.runicsmithing.screen.ForgeBlockMenu;
 import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
@@ -92,32 +96,57 @@ public class ForgeBlockEntity extends ForgeBlockEntityParent implements MenuProv
 
     private static void craftItem(ForgeBlockEntityParent entity, SimpleContainer inventory) {
         if (hasRecipe(entity, inventory)) {
+            //Old json recipe
+            /*
             Level level = entity.getLevel();
             Optional<ForgeRecipe> recipe = level.getRecipeManager().getRecipeFor(ForgeRecipe.Type.INSTANCE, inventory, level);
             Item forgeOutput = recipe.get().getResultItem().getItem();
+            */
+
+
+            //New dynamic recipe
+            Item forgeOutput = RSDynamicRecipeRegistry.getRecipeResult(RSRecipeCategory.FORGE_HEATING, inventory.getItem(0).getItem());
+
+
+
+
             entity.itemHandler.extractItem(0, 1, false);
             entity.itemHandler.setStackInSlot(1, new ItemStack(forgeOutput, entity.itemHandler.getStackInSlot(1).getCount() + 1));
         }
     }
     private static boolean hasRecipe(@NotNull ForgeBlockEntityParent entity, SimpleContainer inventory) {
-        boolean hasValidMaterialInFirstSlot;
-        //Accept only copper
-        hasValidMaterialInFirstSlot = entity.itemHandler.getStackInSlot(0).getItem() == Items.COPPER_INGOT;
+        boolean hasValidMaterialInFirstSlot = false;
+        //Accept only items with a primitive output
 
 
-        return hasValidMaterialInFirstSlot && canInsertAmountIntoOutput(inventory) && canInsertItemIntoOutputSlot(inventory, entity.itemHandler.getStackInSlot(0));
-    }
-    private static boolean canInsertItemIntoOutputSlot(@NotNull SimpleContainer inventory, ItemStack stack) {
-        if (inventory.getItem(1).isEmpty()) {return true;}
-
-
-        Item itemInOutput = inventory.getItem(1).getItem();
-        Item itemInInput = stack.getItem();
-        if (itemInOutput instanceof HotIngotBase) {
-            Item coolingResult = ((HotIngotBase)itemInOutput).getCoolingResult();
-            return coolingResult == itemInInput;
+        //New recipe code
+        Item output = null;
+        Item itemInFirstSlot = inventory.getItem(0).getItem();
+        if (RSDynamicRecipeRegistry.isItemAValidInput(itemInFirstSlot, RSRecipeCategory.FORGE_HEATING)) {
+            output = RSDynamicRecipeRegistry.getRecipeResult(RSRecipeCategory.FORGE_HEATING, itemInFirstSlot);
+            if (output instanceof SmithingChainItem) {
+                if (((SmithingChainItem) output).getMaterial().getPrimitive()) {hasValidMaterialInFirstSlot = true;};
+            }
         }
-        return false;
+
+
+        //Old recipe code
+        /*Optional<ForgeRecipe> recipe = level.getRecipeManager().getRecipeFor(ForgeRecipe.Type.INSTANCE, inventory, level);
+        if (recipe.isPresent()) {
+            Item forgeOutput = recipe.get().getResultItem().getItem();
+            if (forgeOutput instanceof SmithingChainItem) {
+                if (((SmithingChainItem) forgeOutput).getMaterial().getPrimitive()) {
+                    hasValidMaterialInFirstSlot = true;
+                }
+            }
+        }*/
+
+
+
+        return hasValidMaterialInFirstSlot && canInsertAmountIntoOutput(inventory) && canInsertItemIntoOutputSlot(inventory, output);
+    }
+    private static boolean canInsertItemIntoOutputSlot(@NotNull SimpleContainer inventory, Item stack) {
+        return inventory.getItem(1).isEmpty() || inventory.getItem(1).getItem() == stack;
     }
     private static boolean canInsertAmountIntoOutput(@NotNull SimpleContainer inventory) {
         return inventory.getItem(1).getMaxStackSize() > inventory.getItem(1).getCount();

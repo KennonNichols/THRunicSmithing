@@ -1,6 +1,7 @@
 package com.thathitmann.runicsmithing.item;
 
 import com.thathitmann.runicsmithing.RunicSmithing;
+import com.thathitmann.runicsmithing.generators.RSDynamicRecipeRegistry;
 import com.thathitmann.runicsmithing.item.custom.*;
 import com.thathitmann.runicsmithing.item.custom.supers.*;
 import net.minecraft.world.item.Item;
@@ -57,10 +58,11 @@ public class ModItems {
 
 
 
+       // ModItems.ITEMS.register("copper", () -> new HotIngotBase(new Item.Properties().tab(ModCreativeTab.TAB), new RunicSmithingMaterial(Items.COPPER_INGOT, "copper", true)));
 
 
         //Copper
-        MaterialRegistry.addMaterialToRegistry(Items.COPPER_INGOT,"copper");
+        MaterialRegistry.addMaterialToRegistry(Items.COPPER_INGOT,"copper", true);
         //Iron
         MaterialRegistry.addMaterialToRegistry(Items.IRON_INGOT,"iron");
         //Gold
@@ -92,7 +94,9 @@ public class ModItems {
 
 
     public static void register(IEventBus eventBus) {
-        generateLateRegistry();
+        //Generate automatic item registries prior to registering
+        ModItems.generateLateRegistry();
+        //Then register
         ITEMS.register(eventBus);
     }
 }
