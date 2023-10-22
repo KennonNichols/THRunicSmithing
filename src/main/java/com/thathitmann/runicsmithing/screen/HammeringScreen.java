@@ -1,11 +1,11 @@
 package com.thathitmann.runicsmithing.screen;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.thathitmann.runicsmithing.RunicSmithing;
-import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.AbstractButton;
+import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.gui.screens.social.PlayerEntry;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -65,11 +65,20 @@ public class HammeringScreen extends AbstractContainerScreen<HammeringMenu> {
         int xShift = (52 * (index % 3));
         int yShift = (52 * (index / 3));
 
-        Button newButton = new Button(xStart + 11 + xShift, yStart + 7 + yShift, 50, 50, Component.literal(""), pButton -> smithCellAtIndex(index));
+        net.minecraft.client.gui.components.AbstractButton newButton = new AbstractButton(xStart + 11 + xShift, yStart + 7 + yShift, 50, 50, Component.literal("")) {
+            @Override
+            public void onPress() {
+                smithCellAtIndex(index);
+            }
+
+            @Override
+            protected void updateWidgetNarration(NarrationElementOutput pNarrationElementOutput) {
+
+            }
+        };
 
         addWidget(newButton);
     }
-
 
 
 
@@ -79,23 +88,21 @@ public class HammeringScreen extends AbstractContainerScreen<HammeringMenu> {
 
 
     @Override
-    protected void renderLabels(@NotNull PoseStack pPoseStack, int pMouseX, int pMouseY) {
-    }
+    protected void renderLabels(GuiGraphics pGuiGraphics, int pMouseX, int pMouseY) {}
+
 
     @Override
-    protected void renderBg(@NotNull PoseStack poseStack, float partialTick, int mouseX, int mouseY) {
+    protected void renderBg(@NotNull GuiGraphics pGuiGraphics, float partialTick, int mouseX, int mouseY) {
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderColor(1.0f,1.0f,1.0f,1.0f);
         RenderSystem.setShaderTexture(0, TEXTURE);
 
-        this.blit(poseStack, xStart, yStart, 0, 0, imageWidth, imageHeight);
+        pGuiGraphics.blit(TEXTURE, xStart, yStart, 0, 0, imageWidth, imageHeight);
         
     }
 
-    @Override
-    public void render(@NotNull PoseStack poseStack, int mouseX, int mouseY, float delta) {
-        renderBackground(poseStack);
-        super.render(poseStack, mouseX, mouseY, delta);
-        //renderTooltip(poseStack, mouseX, mouseY);
-    }
+
+
+
+
 }

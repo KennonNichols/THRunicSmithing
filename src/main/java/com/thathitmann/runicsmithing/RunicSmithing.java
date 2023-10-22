@@ -1,11 +1,13 @@
 package com.thathitmann.runicsmithing;
 
 //import com.mojang.logging.LogUtils;
+
 import com.thathitmann.runicsmithing.block.ModBlocks;
 import com.thathitmann.runicsmithing.block.entity.ModBlockEntities;
 import com.thathitmann.runicsmithing.generators.RSDynamicRecipeRegistry;
+import com.thathitmann.runicsmithing.item.ModCreativeTab;
 import com.thathitmann.runicsmithing.item.ModItems;
-//import com.thathitmann.runicsmithing.recipe.ModRecipes;
+import com.thathitmann.runicsmithing.item.custom.supers.CreativeTabRegistry;
 import com.thathitmann.runicsmithing.screen.CoreForgeBlockScreen;
 import com.thathitmann.runicsmithing.screen.ForgeBlockScreen;
 import com.thathitmann.runicsmithing.screen.HammeringScreen;
@@ -17,14 +19,14 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-
-import javax.json.JsonReader;
+import net.minecraftforge.registries.RegistryObject;
 //import org.slf4j.Logger;
 
 // The value here should match an entry in the META-INF/mods.toml file
@@ -40,6 +42,9 @@ public class RunicSmithing
         //Create Event Bus
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 
+
+        //Register tabs
+        ModCreativeTab.register(modEventBus);
         //Register items
         ModItems.register(modEventBus);
         //Register blocks
@@ -55,7 +60,7 @@ public class RunicSmithing
         // Register ourselves for server and other game events we are interested in
         MinecraftForge.EVENT_BUS.register(this);
 
-
+        modEventBus.addListener(this::addCreative);
     }
 
 
@@ -64,6 +69,29 @@ public class RunicSmithing
         //Cook the recipes on world open
         RSDynamicRecipeRegistry.cook();
     }
+
+
+    private void addCreative(BuildCreativeModeTabContentsEvent event) {
+        if(event.getTabKey() == ModCreativeTab.TAB.getKey()) {
+            for (RegistryObject<Item> item : CreativeTabRegistry.itemsToAddToCreativeModeTabBecauseOfThisNonsense)
+            {
+                event.accept(item);
+            }
+            event.accept(ModItems.CHARCOAL_BRIQUETTE);
+            event.accept(ModItems.GLOVES);
+            event.accept(ModItems.IRON_SMITHING_HAMMER);
+            event.accept(ModItems.STONE_SMITHING_HAMMER);
+            event.accept(ModItems.TONGS);
+
+            event.accept(ModBlocks.FORGE_BLOCK);
+            event.accept(ModBlocks.CORE_FORGE_BLOCK);
+            event.accept(ModBlocks.STONE_ANVIL_BLOCK);
+            event.accept(ModBlocks.WOODEN_BASIN_BLOCK);
+
+        }
+
+    }
+
 
     public static final TagKey<Item> burningHotTag = ItemTags.create(new ResourceLocation("runicsmithing", "burninghot"));
     public static final TagKey<Item> heatInsulatingTag = ItemTags.create(new ResourceLocation("runicsmithing", "heatinsulating"));

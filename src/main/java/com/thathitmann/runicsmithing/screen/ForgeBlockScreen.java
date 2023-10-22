@@ -3,6 +3,7 @@ package com.thathitmann.runicsmithing.screen;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.thathitmann.runicsmithing.RunicSmithing;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
@@ -29,38 +30,36 @@ public class ForgeBlockScreen extends AbstractContainerScreen<ForgeBlockMenu> {
 
 
     @Override
-    protected void renderBg(@NotNull PoseStack poseStack, float partialTick, int mouseX, int mouseY) {
+    protected void renderBg(@NotNull GuiGraphics pGuiGraphics, float partialTick, int mouseX, int mouseY) {
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderColor(1.0f,1.0f,1.0f,1.0f);
         RenderSystem.setShaderTexture(0, TEXTURE);
         int x = (width - imageWidth) / 2;
         int y = (height - imageHeight) / 2;
 
-        this.blit(poseStack, x, y, 0, 0, imageWidth, imageHeight);
-        renderProgressArrow(poseStack, x, y);
-        renderHeatGuage(poseStack, x, y);
-        renderBurningField(poseStack, x, y);
-        
+        pGuiGraphics.blit(TEXTURE, x, y, 0, 0, imageWidth, imageHeight);
+
+
+        //pGuiGraphics.blit(x, y, 0, 0, imageWidth, imageHeight);
+        renderProgressArrow(pGuiGraphics, x, y);
+        renderHeatGuage(pGuiGraphics, x, y);
+        renderBurningField(pGuiGraphics, x, y);
+
     }
 
-    private void renderHeatGuage(PoseStack poseStack, int x, int y) {
-        blit(poseStack, x + 84, y + 78 - menu.getScaledHeat(), 176, 28 + 64 - menu.getScaledHeat(), 18, menu.getScaledHeat());
+    private void renderHeatGuage(GuiGraphics pGuiGraphics, int x, int y) {
+        pGuiGraphics.blit(TEXTURE, x + 84, y + 78 - menu.getScaledHeat(), 176, 28 + 64 - menu.getScaledHeat(), 18, menu.getScaledHeat());
     }
 
-    private void renderBurningField(PoseStack poseStack, int x, int y) {
-        blit(poseStack, x + 42, y + 68 - menu.getScaledBurnTime(), 176, 125 - menu.getScaledBurnTime(), 16, menu.getScaledBurnTime());
+    private void renderBurningField(GuiGraphics pGuiGraphics, int x, int y) {
+        pGuiGraphics.blit(TEXTURE, x + 42, y + 68 - menu.getScaledBurnTime(), 176, 125 - menu.getScaledBurnTime(), 16, menu.getScaledBurnTime());
     }
 
-    private void renderProgressArrow(PoseStack poseStack, int x, int y) {
+    private void renderProgressArrow(GuiGraphics pGuiGraphics, int x, int y) {
         if (menu.isCrafting()) {
-            blit(poseStack, x + 135, y + 33, 176, 0, 8, menu.getScaledProgress());
+            pGuiGraphics.blit(TEXTURE, x + 135, y + 33, 176, 0, 8, menu.getScaledProgress());
         }
     }
 
-    @Override
-    public void render(@NotNull PoseStack poseStack, int mouseX, int mouseY, float delta) {
-        renderBackground(poseStack);
-        super.render(poseStack, mouseX, mouseY, delta);
-        renderTooltip(poseStack, mouseX, mouseY);
-    }
+
 }

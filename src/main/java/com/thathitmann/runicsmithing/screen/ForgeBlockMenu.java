@@ -19,14 +19,14 @@ public class ForgeBlockMenu extends AbstractContainerMenu {
     private final Level level;
     private final ContainerData data;
     public ForgeBlockMenu(int id, Inventory inventory, FriendlyByteBuf extraData) {
-        this(id, inventory, inventory.player.level.getBlockEntity(extraData.readBlockPos()),new SimpleContainerData(5));
+        this(id, inventory, inventory.player.level().getBlockEntity(extraData.readBlockPos()),new SimpleContainerData(5));
     }
 
     public ForgeBlockMenu(int id, Inventory inventory, BlockEntity entity, ContainerData data){
         super(ModMenuTypes.FORGE_BLOCK_MENU.get(), id);
         checkContainerSize(inventory, 2);
         blockEntity = (ForgeBlockEntity) entity;
-        this.level = inventory.player.level;
+        this.level = inventory.player.level();
         this.data = data;
 
         //Create player slots

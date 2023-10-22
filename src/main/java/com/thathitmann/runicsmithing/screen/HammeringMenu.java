@@ -20,7 +20,7 @@ public class HammeringMenu extends AbstractContainerMenu {
     public HammeringMenu(int id, Inventory inventory, ForgeHammer entity, ContainerData data){
         super(ModMenuTypes.HAMMERING_MENU.get(), id);
         checkContainerSize(inventory, 2);
-        this.level = inventory.player.level;
+        this.level = inventory.player.level();
 
         //Create player slots
         //addPlayerInventory(inventory);

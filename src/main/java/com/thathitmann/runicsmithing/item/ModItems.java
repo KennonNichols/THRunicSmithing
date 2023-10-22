@@ -27,19 +27,19 @@ public class ModItems {
 
     //Tongs
     public static final RegistryObject<Item> TONGS = ITEMS.register("tongs",
-            () -> new TongsItem(new Item.Properties().tab(ModCreativeTab.TAB)));
+            () -> new TongsItem(new Item.Properties()));
     //Gloves
     public static final RegistryObject<Item> GLOVES = ITEMS.register("gloves",
-            () -> new GlovesItem(new Item.Properties().tab(ModCreativeTab.TAB)));
+            () -> new GlovesItem(new Item.Properties()));
     //Hammer
     public static final RegistryObject<Item> IRON_SMITHING_HAMMER = ITEMS.register("iron_smithing_hammer",
-            () -> new IronHammerItem(new Item.Properties().tab(ModCreativeTab.TAB)));
+            () -> new IronHammerItem(new Item.Properties()));
     //Stone Hammer
     public static final RegistryObject<Item> STONE_SMITHING_HAMMER = ITEMS.register("stone_smithing_hammer",
-            () -> new StoneHammerItem(new Item.Properties().tab(ModCreativeTab.TAB)));
+            () -> new StoneHammerItem(new Item.Properties()));
     //Charcoal Briquette
     public static final RegistryObject<Item> CHARCOAL_BRIQUETTE = ITEMS.register("charcoal_briquette",
-            () -> new CharcoalBriquetteItem(new Item.Properties().tab(ModCreativeTab.TAB)) {
+            () -> new CharcoalBriquetteItem(new Item.Properties()) {
                 @Override
                 public int getBurnTime(ItemStack itemStack, @Nullable RecipeType<?> recipeType) {
                     return 400;

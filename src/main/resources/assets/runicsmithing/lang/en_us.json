@@ -17,6 +17,6 @@
   "block.runicsmithing.stone_anvil_block": "Stone Anvil",
   "block.runicsmithing.wooden_basin_block": "Wooden Basin",
 
-  "itemGroup.runicsmithingtab": "Runic Smithing"
+  "creativemodetab:runicsmithing_tab": "Runic Smithing"
 
 }
