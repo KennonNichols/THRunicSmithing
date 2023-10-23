@@ -83,7 +83,7 @@ public class MaterialRegistry {
         //Register the ingot to ModItems
         RegistryObject<Item> newHotPickaxe = ModItems.ITEMS.register(fileName, () -> new SmithingChainItem(new Item.Properties(), material));
         //Add the pickaxe to the stupid list
-        CreativeTabRegistry.itemsToAddToCreativeModeTabBecauseOfThisNonsense.add(newHotIngot);
+        CreativeTabRegistry.itemsToAddToCreativeModeTabBecauseOfThisNonsense.add(newHotPickaxe);
         //add forge heating recipe
         newRawRecipe = new RSRawDynamicRecipe(newHotIngot, newHotPickaxe, RSRecipeCategory.SHAPED_HAMMERING, Arrays.asList(RSDynamicRecipeRegistry.PICKAXE_SHAPE));
         RSDynamicRecipeRegistry.addNewRawRecipe(newRawRecipe);
