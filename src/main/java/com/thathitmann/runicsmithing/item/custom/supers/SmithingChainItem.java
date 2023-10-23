@@ -3,6 +3,7 @@ package com.thathitmann.runicsmithing.item.custom.supers;
 import com.thathitmann.runicsmithing.block.ModBlocks;
 import com.thathitmann.runicsmithing.block.custom.WoodenBasinBlock;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.color.item.ItemColor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -102,8 +103,9 @@ public class SmithingChainItem extends Item {
         return super.use(level, player, interactionHand);
     }
 
-    public SmithingChainItem(Properties properties) {
+    public SmithingChainItem(Properties properties, RunicSmithingMaterial material) {
         super(properties);
+        this.material = material;
     }
 
     @Override
@@ -153,6 +155,9 @@ public class SmithingChainItem extends Item {
         player.getInventory().setItem(player.getInventory().selected, new ItemStack(this.getCoolingResult(), player.getMainHandItem().getCount()));
     }
 
+    private void ingotToTool(Player player) {
+
+    }
 
 
 }

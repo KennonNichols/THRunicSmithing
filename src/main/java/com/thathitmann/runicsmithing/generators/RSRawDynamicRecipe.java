@@ -31,6 +31,7 @@ public final class RSRawDynamicRecipe {
         this.specialArgs = specialArgs;
     }
 
+
     public Item getInput() {
         if (inputItem != null) {return inputItem;}
         else {return inputRegistry.get();}

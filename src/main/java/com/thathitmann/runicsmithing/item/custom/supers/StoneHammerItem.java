@@ -15,7 +15,7 @@ public class StoneHammerItem extends ForgeHammer {
 
     public StoneHammerItem(Properties properties) {
         super(properties);
-        this.tooltip = "Hold in offhand with ingot in mainhand, and sneak-click on anvil to forge the ingot into a tool. Only works with stone anvil.";
+        this.tooltip = "Hold in offhand with ingot in mainhand, and sneak-click on anvil to forge the ingot into a tool. Only works with stone anvil. ";
     }
 
 
@@ -24,7 +24,7 @@ public class StoneHammerItem extends ForgeHammer {
         BlockPos blockpos = pContext.getClickedPos();
         Level level = pContext.getLevel();
         Player player = pContext.getPlayer();
-        if (!level.isClientSide() && player.getOffhandItem().getItem() instanceof ForgeHammer && (level.getBlockState(blockpos).is(ModBlocks.STONE_ANVIL_BLOCK.get()))) {
+        if (!level.isClientSide() && player.getOffhandItem().getItem() instanceof ForgeHammer && player.getMainHandItem().getItem() instanceof SmithingChainItem && (level.getBlockState(blockpos).is(ModBlocks.STONE_ANVIL_BLOCK.get()))) {
             NetworkHooks.openScreen(((ServerPlayer) player), this, player.blockPosition());
         }
         return InteractionResult.PASS;

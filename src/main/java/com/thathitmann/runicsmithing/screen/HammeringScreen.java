@@ -14,6 +14,10 @@ import org.jetbrains.annotations.NotNull;
 
 public class HammeringScreen extends AbstractContainerScreen<HammeringMenu> {
 
+
+
+
+
     private static final ResourceLocation TEXTURE =
             new ResourceLocation(RunicSmithing.MOD_ID, "textures/gui/hammering_gui.png");
 
@@ -33,8 +37,6 @@ public class HammeringScreen extends AbstractContainerScreen<HammeringMenu> {
 
     public HammeringScreen(HammeringMenu hammeringMenu, Inventory inventory, Component component) {
         super(hammeringMenu, inventory, component);
-
-
     }
 
 
@@ -42,23 +44,18 @@ public class HammeringScreen extends AbstractContainerScreen<HammeringMenu> {
     @Override
     protected void init() {
         super.init();
-
-
         xStart = (width - imageWidth) / 2;
         yStart = (height - imageHeight) / 2;
-
         for (int i = 0; i < 9; i++) {
             addButtonRelatedToIndex(i);
         }
+    }
 
 
-
-
-
-
-
-
-
+    @Override
+    public void onClose() {
+        menu.attemptToCraft();
+        super.onClose();
     }
 
     private void addButtonRelatedToIndex(int index) {
@@ -72,7 +69,7 @@ public class HammeringScreen extends AbstractContainerScreen<HammeringMenu> {
             }
 
             @Override
-            protected void updateWidgetNarration(NarrationElementOutput pNarrationElementOutput) {
+            protected void updateWidgetNarration(@NotNull NarrationElementOutput pNarrationElementOutput) {
 
             }
         };
@@ -83,12 +80,12 @@ public class HammeringScreen extends AbstractContainerScreen<HammeringMenu> {
 
 
     private void smithCellAtIndex(int index) {
-        int p = 1;
+        menu.tryReduceButtonState(index);
     }
 
 
     @Override
-    protected void renderLabels(GuiGraphics pGuiGraphics, int pMouseX, int pMouseY) {}
+    protected void renderLabels(@NotNull GuiGraphics pGuiGraphics, int pMouseX, int pMouseY) {}
 
 
     @Override
@@ -98,11 +95,18 @@ public class HammeringScreen extends AbstractContainerScreen<HammeringMenu> {
         RenderSystem.setShaderTexture(0, TEXTURE);
 
         pGuiGraphics.blit(TEXTURE, xStart, yStart, 0, 0, imageWidth, imageHeight);
-        
+        renderCells(pGuiGraphics);
     }
 
 
 
+    private void renderCells(GuiGraphics pGuiGraphics) {
+        for (int i = 0; i < 9; i++) {
+            int xShift = (52 * (i % 3));
+            int yShift = (52 * (i / 3));
+            pGuiGraphics.blit(TEXTURE, xStart + 11 + xShift, yStart + 7 + yShift, 176, 50 * menu.getButtonState(i), 50, 50);
+        }
+    }
 
 
 }

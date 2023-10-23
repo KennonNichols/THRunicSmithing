@@ -8,16 +8,19 @@ import com.thathitmann.runicsmithing.generators.RSDynamicRecipeRegistry;
 import com.thathitmann.runicsmithing.item.ModCreativeTab;
 import com.thathitmann.runicsmithing.item.ModItems;
 import com.thathitmann.runicsmithing.item.custom.supers.CreativeTabRegistry;
+import com.thathitmann.runicsmithing.item.custom.supers.SmithingChainItem;
 import com.thathitmann.runicsmithing.screen.CoreForgeBlockScreen;
 import com.thathitmann.runicsmithing.screen.ForgeBlockScreen;
 import com.thathitmann.runicsmithing.screen.HammeringScreen;
 import com.thathitmann.runicsmithing.screen.ModMenuTypes;
+import net.minecraft.client.color.item.ItemColor;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.RegisterColorHandlersEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -59,9 +62,11 @@ public class RunicSmithing
         modEventBus.addListener(this::commonSetup);
         // Register ourselves for server and other game events we are interested in
         MinecraftForge.EVENT_BUS.register(this);
-
         modEventBus.addListener(this::addCreative);
     }
+
+
+
 
 
     private void commonSetup(final FMLCommonSetupEvent event)
@@ -91,8 +96,6 @@ public class RunicSmithing
         }
 
     }
-
-
     public static final TagKey<Item> burningHotTag = ItemTags.create(new ResourceLocation("runicsmithing", "burninghot"));
     public static final TagKey<Item> heatInsulatingTag = ItemTags.create(new ResourceLocation("runicsmithing", "heatinsulating"));
 
@@ -108,4 +111,5 @@ public class RunicSmithing
             MenuScreens.register(ModMenuTypes.HAMMERING_MENU.get(), HammeringScreen::new);
         }
     }
+
 }

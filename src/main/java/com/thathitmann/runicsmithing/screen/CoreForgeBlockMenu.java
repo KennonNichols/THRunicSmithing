@@ -40,7 +40,6 @@ public class CoreForgeBlockMenu extends AbstractContainerMenu {
         });
 
         addDataSlots(data);
-
     }
 
     public  boolean isCrafting() {

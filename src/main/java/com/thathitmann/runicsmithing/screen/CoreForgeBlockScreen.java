@@ -29,7 +29,6 @@ public class CoreForgeBlockScreen extends AbstractContainerScreen<CoreForgeBlock
 
 
 
-
     @Override
     protected void renderBg(@NotNull GuiGraphics pGuiGraphics, float partialTick, int mouseX, int mouseY) {
         RenderSystem.setShader(GameRenderer::getPositionTexShader);

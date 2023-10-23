@@ -5,14 +5,58 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 public final class RSDynamicRecipeRegistry {
     static final List<RSRawDynamicRecipe> rawRecipes = new ArrayList<>();
     static final List<RSDynamicRecipe> recipes = new ArrayList<>();
 
 
+    public static final Boolean[] PICKAXE_SHAPE = {
+            true, true, true,
+            false, true, false,
+            false, true, false};
+    public static final Boolean[] SWORD_SHAPE = {
+            false, true, false,
+            false, true, false,
+            false, false, false};
+    public static final Boolean[] SHOVEL_SHAPE = {
+            false, true, false,
+            false, true, false,
+            false, true, false};
+    public static final Boolean[] AXE_SHAPE = {
+            false, true, true,
+            false, true, true,
+            false, true, false};
+    public static final Boolean[] HOE_SHAPE = {
+            false, true, true,
+            false, true, false,
+            false, true, false};
 
+
+    public static Boolean isShapedHammeringPatternValid(List<Boolean> shapedHammeringPatternList) {
+
+        Boolean[] shapedHammeringPattern = shapedHammeringPatternList.toArray(new Boolean[9]);
+
+        if (Arrays.equals(shapedHammeringPattern, PICKAXE_SHAPE)) {
+            return true;
+        }
+        if (Arrays.equals(shapedHammeringPattern, SHOVEL_SHAPE)) {
+            return true;
+        }
+        if (Arrays.equals(shapedHammeringPattern, SWORD_SHAPE)) {
+            return true;
+        }
+        if (Arrays.equals(shapedHammeringPattern, AXE_SHAPE)) {
+            return true;
+        }
+        if (Arrays.equals(shapedHammeringPattern, HOE_SHAPE)) {
+            return true;
+        }
+        return false;
+    }
     public static @NotNull Boolean isItemAValidInput(Item item, RSRecipeCategory recipeCategory) {
         for (RSDynamicRecipe recipe : recipes) {
             if (recipe.input() == item && recipe.category() == recipeCategory) {return true;}

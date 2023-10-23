@@ -14,7 +14,7 @@ public class IronHammerItem extends ForgeHammer {
     public IronHammerItem(Properties properties) {
         super(properties);
         isAdvancedHammer = true;
-        this.tooltip = "Hold in off hand with ingot in main hand, and sneak-click on anvil to forge the ingot into a tool. Gives +1 quality per cycle to tool when forged on a metal anvil.";
+        this.tooltip = "Hold in off hand with ingot in main hand, and sneak-click on anvil to forge the ingot into a tool. Gives an extra +1 quality per cycle to tool when forged on a metal anvil.";
     }
 
     @Override
@@ -22,7 +22,7 @@ public class IronHammerItem extends ForgeHammer {
         BlockPos blockpos = pContext.getClickedPos();
         Level level = pContext.getLevel();
         Player player = pContext.getPlayer();
-        if (!level.isClientSide() && player.getOffhandItem().getItem() instanceof ForgeHammer && ((level.getBlockState(blockpos).is(ModBlocks.STONE_ANVIL_BLOCK.get())) || (level.getBlockState(blockpos).is(Blocks.ANVIL)))) {
+        if (!level.isClientSide() && player.getOffhandItem().getItem() instanceof ForgeHammer && player.getMainHandItem().getItem() instanceof SmithingChainItem && ((level.getBlockState(blockpos).is(ModBlocks.STONE_ANVIL_BLOCK.get())) || (level.getBlockState(blockpos).is(Blocks.ANVIL)))) {
             NetworkHooks.openScreen(((ServerPlayer) player), this, player.blockPosition());
         }
         return InteractionResult.PASS;
