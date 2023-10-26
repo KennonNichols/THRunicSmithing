@@ -1,5 +1,6 @@
 package com.thathitmann.runicsmithing.generators;
 
+import com.thathitmann.runicsmithing.item.custom.supers.ForgeLevel;
 import net.minecraft.world.item.Item;
 import net.minecraftforge.registries.RegistryObject;
 
@@ -11,9 +12,9 @@ public final class RSRawDynamicRecipe {
     private final Item inputItem;
     private final RegistryObject<Item> output;
     private final RSRecipeCategory category;
-    private final List<Boolean> specialArgs;
+    private final List<ForgeLevel> specialArgs;
 
-    public RSRawDynamicRecipe(Item input, RegistryObject<Item> output, RSRecipeCategory category, List<Boolean> specialArgs) {
+    public RSRawDynamicRecipe(Item input, RegistryObject<Item> output, RSRecipeCategory category, List<ForgeLevel> specialArgs) {
         this.inputRegistry = null;
         this.inputItem = input;
 
@@ -22,7 +23,7 @@ public final class RSRawDynamicRecipe {
         this.category = category;
         this.specialArgs = specialArgs;
     }
-    public RSRawDynamicRecipe(RegistryObject<Item> input, RegistryObject<Item> output, RSRecipeCategory category, List<Boolean> specialArgs) {
+    public RSRawDynamicRecipe(RegistryObject<Item> input, RegistryObject<Item> output, RSRecipeCategory category, List<ForgeLevel> specialArgs) {
         this.inputRegistry = input;
         this.inputItem = null;
 
@@ -34,7 +35,7 @@ public final class RSRawDynamicRecipe {
 
     public Item getInput() {
         if (inputItem != null) {return inputItem;}
-        else {return inputRegistry.get();}
+        else {return Objects.requireNonNull(inputRegistry).get();}
     }
 
     public Item getOutput() {
@@ -45,7 +46,7 @@ public final class RSRawDynamicRecipe {
         return category;
     }
 
-    public List<Boolean> specialArgs() {
+    public List<ForgeLevel> specialArgs() {
         return specialArgs;
     }
 

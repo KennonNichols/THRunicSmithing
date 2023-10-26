@@ -3,6 +3,7 @@ package com.thathitmann.runicsmithing.block.entity;
 import com.thathitmann.runicsmithing.generators.RSDynamicRecipeRegistry;
 import com.thathitmann.runicsmithing.generators.RSRecipeCategory;
 import com.thathitmann.runicsmithing.item.custom.supers.Aspect;
+import com.thathitmann.runicsmithing.item.custom.supers.HotIngotBase;
 import com.thathitmann.runicsmithing.item.custom.supers.SmithingChainItem;
 //import com.thathitmann.runicsmithing.recipe.ForgeRecipe;
 import com.thathitmann.runicsmithing.screen.CoreForgeBlockMenu;
@@ -19,8 +20,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.Optional;
 
 import static com.thathitmann.runicsmithing.block.custom.CoreForgeBlock.DEPTH;
 import static com.thathitmann.runicsmithing.block.custom.ForgeBlock.LIT;
@@ -125,30 +124,31 @@ public class CoreForgeBlockEntity extends ForgeBlockEntityParent implements Menu
 
     private static void craftItem(ForgeBlockEntityParent entity, SimpleContainer inventory) {
         if (hasRecipe(entity, inventory)) {
-            //Old json recipe
-            /*
-            Level level = entity.getLevel();
-            Optional<ForgeRecipe> recipe = level.getRecipeManager().getRecipeFor(ForgeRecipe.Type.INSTANCE, inventory, level);
-            Item forgeOutput = recipe.get().getResultItem().getItem();
-            */
-
 
             //New dynamic recipe
             Item forgeOutput = RSDynamicRecipeRegistry.getRecipeResult(RSRecipeCategory.FORGE_HEATING, inventory.getItem(0).getItem());
 
 
             //Switch the item and add NBT tags
+            ItemStack inputItemStack = entity.itemHandler.getStackInSlot(0);
             entity.itemHandler.extractItem(0, 1, false);
             ItemStack outputItemStack = new ItemStack(forgeOutput, entity.itemHandler.getStackInSlot(1).getCount() + 1);
-            if (forgeOutput instanceof SmithingChainItem) {
-                CompoundTag tag = ((SmithingChainItem) forgeOutput).buildNBTAspectTag(outputItemStack, getDepthAspect(entity.getBlockState()).getQualityLevel(), getDepthAspect(entity.getBlockState()).getName());
+
+
+
+            if (forgeOutput instanceof HotIngotBase && outputItemStack.getTag() != null) {
+                CompoundTag tag = SmithingChainItem.addNBTAspectTag(outputItemStack.getTag(), getDepthAspect(entity.getBlockState()).getQualityLevel(), getDepthAspect(entity.getBlockState()).getName());
                 outputItemStack.setTag(tag);
             }
+            else if (forgeOutput instanceof SmithingChainItem) {
+                outputItemStack.setTag(inputItemStack.getTag());
+            }
+
             entity.itemHandler.setStackInSlot(1, outputItemStack);
 
         }
     }
-    private static boolean hasRecipe(@NotNull ForgeBlockEntityParent entity, SimpleContainer inventory) {
+    private static boolean hasRecipe(@NotNull ForgeBlockEntityParent ignoredEntity, SimpleContainer inventory) {
 
         //If not valid, return false immediately
         if (!RSDynamicRecipeRegistry.isItemAValidInput(inventory.getItem(0).getItem(), RSRecipeCategory.FORGE_HEATING)) {

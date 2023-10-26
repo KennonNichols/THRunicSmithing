@@ -7,9 +7,10 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.network.NetworkHooks;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Objects;
 
 public class StoneHammerItem extends ForgeHammer {
 
@@ -20,11 +21,12 @@ public class StoneHammerItem extends ForgeHammer {
 
 
     @Override
-    public InteractionResult useOn(UseOnContext pContext) {
+    public @NotNull InteractionResult useOn(UseOnContext pContext) {
         BlockPos blockpos = pContext.getClickedPos();
         Level level = pContext.getLevel();
         Player player = pContext.getPlayer();
-        if (!level.isClientSide() && player.getOffhandItem().getItem() instanceof ForgeHammer && player.getMainHandItem().getItem() instanceof SmithingChainItem && (level.getBlockState(blockpos).is(ModBlocks.STONE_ANVIL_BLOCK.get()))) {
+        if (!level.isClientSide() && Objects.requireNonNull(player).getOffhandItem().getItem() instanceof ForgeHammer && player.getMainHandItem().getItem() instanceof HotIngotBase && (level.getBlockState(blockpos).is(ModBlocks.STONE_ANVIL_BLOCK.get()))) {
+            advancedMode = false;
             NetworkHooks.openScreen(((ServerPlayer) player), this, player.blockPosition());
         }
         return InteractionResult.PASS;

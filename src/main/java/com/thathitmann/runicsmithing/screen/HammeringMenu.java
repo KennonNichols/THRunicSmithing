@@ -2,18 +2,20 @@ package com.thathitmann.runicsmithing.screen;
 
 import com.thathitmann.runicsmithing.generators.RSDynamicRecipeRegistry;
 import com.thathitmann.runicsmithing.generators.RSRecipeCategory;
+import com.thathitmann.runicsmithing.item.custom.supers.Aspect;
 import com.thathitmann.runicsmithing.item.custom.supers.ForgeHammer;
+import com.thathitmann.runicsmithing.item.custom.supers.ForgeLevel;
+import com.thathitmann.runicsmithing.item.custom.supers.SmithingChainItem;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.*;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.NotNull;
 
-import java.sql.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,14 +26,17 @@ public class HammeringMenu extends AbstractContainerMenu {
 
     private final List<Integer> states = new ArrayList<>(9);
     private final int startingState;
+    private final ForgeHammer entity;
 
-    public HammeringMenu(int id, Inventory inventory, FriendlyByteBuf extraData) {
+    public HammeringMenu(int id, Inventory inventory, FriendlyByteBuf ignoredExtraData) {
         this(id, inventory, (ForgeHammer)inventory.player.getOffhandItem().getItem(), 4);
     }
 
-    public HammeringMenu(int id, Inventory inventory, ForgeHammer entity, int startingState){
+    public HammeringMenu(int id, @NotNull Inventory inventory, ForgeHammer entity, int startingState){
         super(ModMenuTypes.HAMMERING_MENU.get(), id);
         this.player = inventory.player;
+
+        this.entity = entity;
 
         this.startingState = startingState;
         for (int i = 0; i <9; i++) {
@@ -40,13 +45,14 @@ public class HammeringMenu extends AbstractContainerMenu {
     }
 
 
+    @SuppressWarnings("DataFlowIssue")
     @Override
-    public ItemStack quickMoveStack(Player pPlayer, int pIndex) {
+    public @NotNull ItemStack quickMoveStack(@NotNull Player pPlayer, int pIndex) {
         return null;
     }
 
     @Override
-    public final boolean stillValid(Player pPlayer) {
+    public final boolean stillValid(@NotNull Player pPlayer) {
         return true;
     }
 
@@ -55,18 +61,28 @@ public class HammeringMenu extends AbstractContainerMenu {
         return this.states.get(index);
     }
 
-    public void tryReduceButtonState(int index) {
-        if (this.states.get(index) == this.startingState) {
+    public Boolean tryReduceButtonState(int index) {
+        if (this.states.get(index) > 0) {
             this.states.set(index, this.states.get(index) - 1);
         }
+        return this.states.get(index) <= 0;
     }
 
-    private List<Boolean> getListAsBoolean() {
-        List<Boolean> booleanizedList = new ArrayList<>();
+    private List<ForgeLevel> getListAsForgeLevels() {
+        List<ForgeLevel> levelList = new ArrayList<>();
         for (int i = 0; i < 9; i++) {
-            booleanizedList.add(i, this.states.get(i) == startingState);
+            if (this.states.get(i) == startingState) {
+                levelList.add(i, ForgeLevel.PRESENT);
+            }
+            else if (this.states.get(i) == 0) {
+                levelList.add(i, ForgeLevel.GONE);
+            }
+            else
+            {
+                levelList.add(i, ForgeLevel.INCOMPLETE);
+            }
         }
-        return booleanizedList;
+        return levelList;
     }
 
     private Boolean hasListChanged() {
@@ -77,12 +93,20 @@ public class HammeringMenu extends AbstractContainerMenu {
     }
 
     public void attemptToCraft() {
-        if (hasListChanged()) {
-            Item result = RSDynamicRecipeRegistry.getRecipeResult(RSRecipeCategory.SHAPED_HAMMERING, player.getMainHandItem().getItem(), getListAsBoolean());
-            if (result != null) {
-                player.getInventory().setItem(player.getInventory().selected, new ItemStack(result, player.getMainHandItem().getCount()));
+        ItemStack inputStack = player.getMainHandItem();
+        if (hasListChanged() && inputStack.getItem() instanceof SmithingChainItem) {
+            Item result = RSDynamicRecipeRegistry.getRecipeResult(RSRecipeCategory.SHAPED_HAMMERING, inputStack.getItem(), getListAsForgeLevels());
+            if (result != inputStack.getItem()) {
+                ItemStack outputItemStack = new ItemStack(result, player.getMainHandItem().getCount());
+                CompoundTag tag = inputStack.getTag();
+                if (entity.isAdvancedMode() && tag != null) {
+                    tag = SmithingChainItem.addNBTAspectTag(tag, new Aspect("Forged with iron tools for +3 quality.", 3));
+                }
+                outputItemStack.setTag(tag);
+                player.getInventory().setItem(player.getInventory().selected, outputItemStack);
             }
             else {
+                //Destroy invalid recipes
                 player.getInventory().setItem(player.getInventory().selected, new ItemStack(Items.AIR));
             }
         }

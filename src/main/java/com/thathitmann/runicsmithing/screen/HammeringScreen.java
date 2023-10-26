@@ -65,7 +65,7 @@ public class HammeringScreen extends AbstractContainerScreen<HammeringMenu> {
         net.minecraft.client.gui.components.AbstractButton newButton = new AbstractButton(xStart + 11 + xShift, yStart + 7 + yShift, 50, 50, Component.literal("")) {
             @Override
             public void onPress() {
-                smithCellAtIndex(index);
+                smithCellAtIndex(index, this);
             }
 
             @Override
@@ -79,8 +79,12 @@ public class HammeringScreen extends AbstractContainerScreen<HammeringMenu> {
 
 
 
-    private void smithCellAtIndex(int index) {
-        menu.tryReduceButtonState(index);
+    private void smithCellAtIndex(int index, AbstractButton button) {
+        //If the reduction brings it to 0
+        if (menu.tryReduceButtonState(index)) {
+            //Destroy the button
+            removeWidget(button);
+        }
     }
 
 

@@ -7,20 +7,17 @@ import com.thathitmann.runicsmithing.block.entity.ModBlockEntities;
 import com.thathitmann.runicsmithing.generators.RSDynamicRecipeRegistry;
 import com.thathitmann.runicsmithing.item.ModCreativeTab;
 import com.thathitmann.runicsmithing.item.ModItems;
-import com.thathitmann.runicsmithing.item.custom.supers.CreativeTabRegistry;
-import com.thathitmann.runicsmithing.item.custom.supers.SmithingChainItem;
+import com.thathitmann.runicsmithing.item.custom.supers.GeneratedItemRegistry;
 import com.thathitmann.runicsmithing.screen.CoreForgeBlockScreen;
 import com.thathitmann.runicsmithing.screen.ForgeBlockScreen;
 import com.thathitmann.runicsmithing.screen.HammeringScreen;
 import com.thathitmann.runicsmithing.screen.ModMenuTypes;
-import net.minecraft.client.color.item.ItemColor;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.RegisterColorHandlersEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -63,6 +60,7 @@ public class RunicSmithing
         // Register ourselves for server and other game events we are interested in
         MinecraftForge.EVENT_BUS.register(this);
         modEventBus.addListener(this::addCreative);
+        GeneratedItemRegistry.createTranslationFile();
     }
 
 
@@ -78,7 +76,7 @@ public class RunicSmithing
 
     private void addCreative(BuildCreativeModeTabContentsEvent event) {
         if(event.getTabKey() == ModCreativeTab.TAB.getKey()) {
-            for (RegistryObject<Item> item : CreativeTabRegistry.itemsToAddToCreativeModeTabBecauseOfThisNonsense)
+            for (RegistryObject<Item> item : GeneratedItemRegistry.itemsToAddToCreativeModeTabBecauseOfThisNonsense)
             {
                 event.accept(item);
             }

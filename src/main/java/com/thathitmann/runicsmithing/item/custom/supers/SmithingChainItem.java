@@ -2,16 +2,14 @@ package com.thathitmann.runicsmithing.item.custom.supers;
 
 import com.thathitmann.runicsmithing.block.ModBlocks;
 import com.thathitmann.runicsmithing.block.custom.WoodenBasinBlock;
+import com.thathitmann.runicsmithing.generators.RSDynamicRecipeRegistry;
+import com.thathitmann.runicsmithing.generators.RSRecipeCategory;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.color.item.ItemColor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -20,12 +18,11 @@ import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.network.NetworkHooks;
-import org.jetbrains.annotations.Debug;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.Objects;
 
 public class SmithingChainItem extends Item {
 
@@ -37,9 +34,23 @@ public class SmithingChainItem extends Item {
 
     protected String tooltip = "";
 
+    private final static Aspect quenchAspect = new Aspect("Quenched for +1 quality.", 1);
+    private final static Aspect temperAspect = new Aspect("Tempered for +2 quality.", 2);
 
 
-    public Aspect getNBTAspect(ItemStack itemStack) {
+    public static int getTemperCount(@NotNull ItemStack itemStack) {
+        return Objects.requireNonNull(itemStack.getTag()).getInt("runicsmithing.temper_count");
+    }
+
+    public static CompoundTag incrementTemperCount(CompoundTag tag) {
+        tag.putInt("runicsmithing.temper_count", tag.getInt("runicsmithing.temper_count") + 1);
+        return tag;
+    }
+
+
+
+
+    public static Aspect getNBTAspect(ItemStack itemStack) {
         CompoundTag tag = itemStack.getTag();
         if (tag == null) {
             return null;
@@ -49,59 +60,34 @@ public class SmithingChainItem extends Item {
         return new Aspect(name, quality);
     }
 
-
-    public CompoundTag buildNBTAspectTag(@NotNull ItemStack itemStack, int quality, @NotNull String description) {
-
-
-
-
-        CompoundTag nbtData = new CompoundTag();
-
-        Aspect currentAspect = getNBTAspect(itemStack);
-
-
-
-        //Increment quality if it has a tag
-        if (currentAspect != null) {
-            int currentQuality = currentAspect.getQualityLevel();
-            nbtData.putInt("runicsmithing.quality", currentQuality + quality);
-        //Otherwise, just put quality in
-        } else {
-            nbtData.putInt("runicsmithing.quality", quality);
+    public static CompoundTag addNBTAspectTag(@NotNull CompoundTag tag, @Nullable Aspect aspect) {
+        if (aspect != null) {
+            return addNBTAspectTag(tag, aspect.getQualityLevel(), aspect.getName());
         }
+        return tag;
+    }
 
-
-        //Increment description if it has a tag
-        if (currentAspect != null) {
-            String currentDescription = currentAspect.getName();
-            nbtData.putString("runicsmithing.aspect_name", currentDescription + description + "\n\n");
-            //Otherwise, just put description in
-        } else {
-            nbtData.putString("runicsmithing.aspect_name", description + "\n\n");
+    public static CompoundTag addNBTAspectTag(@NotNull CompoundTag tag, @Nullable Integer quality, String description) {
+        if (quality != null) {
+            tag.putInt("runicsmithing.quality", tag.getInt("runicsmithing.quality") + quality);
         }
-
-
-
-
-        //itemStack.setTag(nbtData);
-
-
-        return nbtData;
-
-
+        if (description != null) {
+            tag.putString("runicsmithing.aspect_name", tag.getString("runicsmithing.aspect_name") + description + "\n\n");
+        }
+        return tag;
     }
 
 
 
 
-    public Item getCoolingResult() {return null;}
+    public Item getCoolingResult() {
+        if (RSDynamicRecipeRegistry.isItemAValidInput(this, RSRecipeCategory.QUENCHING)) {
+            return RSDynamicRecipeRegistry.getRecipeResult(RSRecipeCategory.QUENCHING, this);
+        }
+        return null;
+    }
+
     public RunicSmithingMaterial getMaterial() {return material;}
-
-    @Override
-    public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level level, @NotNull Player player, @NotNull InteractionHand interactionHand) {
-        //player.sendSystemMessage(Component.literal(outputState()));
-        return super.use(level, player, interactionHand);
-    }
 
     public SmithingChainItem(Properties properties, RunicSmithingMaterial material) {
         super(properties);
@@ -115,7 +101,7 @@ public class SmithingChainItem extends Item {
 
 
             components.add(Component.literal(tooltip).withStyle(ChatFormatting.DARK_PURPLE));
-            Aspect aspect = ((SmithingChainItem)itemStack.getItem()).getNBTAspect(itemStack);
+            Aspect aspect = SmithingChainItem.getNBTAspect(itemStack);
             if (aspect != null) {
                 String outputString = "Forged item has the following modifiers:\n\n" + aspect.getName() + "Current quality bonus: " + aspect.getQualityLevel();
                 components.add(Component.literal(outputString).withStyle(ChatFormatting.LIGHT_PURPLE));
@@ -128,22 +114,22 @@ public class SmithingChainItem extends Item {
     }
 
     @Override
-    public InteractionResult useOn(UseOnContext pContext) {
+    public @NotNull InteractionResult useOn(UseOnContext pContext) {
         BlockPos blockpos = pContext.getClickedPos();
         Level level = pContext.getLevel();
         Player player = pContext.getPlayer();
-        if (!level.isClientSide() && player.getMainHandItem().getItem() == this) {
+        if (!level.isClientSide() && player != null) {
+            if (player.getMainHandItem().getItem() == this) {
+                BlockState interactedState = level.getBlockState(blockpos);
 
-            BlockState interactedState = level.getBlockState(blockpos);
-
-            //If clicking on a filled wooden basin
-            if (((interactedState.is(ModBlocks.WOODEN_BASIN_BLOCK.get())))) {
-                if (interactedState.getValue(WoodenBasinBlock.FILLED)) {
-                    coolInMainHand(player);
+                //If clicking on a filled wooden basin
+                if (((interactedState.is(ModBlocks.WOODEN_BASIN_BLOCK.get())))) {
+                    if (interactedState.getValue(WoodenBasinBlock.FILLED)) {
+                        coolInMainHand(player, quenchAspect);
+                    }
+                } else if (interactedState.is(Blocks.WATER_CAULDRON)) {
+                    coolInMainHand(player, temperAspect);
                 }
-            }
-            else if (interactedState.is(Blocks.WATER_CAULDRON)) {
-                coolInMainHand(player);
             }
         }
         return InteractionResult.PASS;
@@ -151,13 +137,36 @@ public class SmithingChainItem extends Item {
 
 
 
-    private void coolInMainHand(Player player) {
-        player.getInventory().setItem(player.getInventory().selected, new ItemStack(this.getCoolingResult(), player.getMainHandItem().getCount()));
+    private void coolInMainHand(Player player, Aspect quenchAspect) {
+        Item coolingResult = this.getCoolingResult();
+
+        if (coolingResult != null) {
+
+            ItemStack inputItemStack = player.getMainHandItem();
+            ItemStack outputItemStack = new ItemStack(coolingResult, inputItemStack.getCount());
+
+
+            //If it's a smithing chain item, transfer tags
+            if (inputItemStack.getItem() instanceof SmithingChainItem) {
+                outputItemStack.setTag(inputItemStack.getTag());
+            }
+
+            //If it's a hot tool, and has less than 3 tempers, temper
+            if (inputItemStack.getItem() instanceof HotForgedToolBase && SmithingChainItem.getTemperCount(inputItemStack) < 3 && quenchAspect != null && outputItemStack.getTag() != null) {
+                CompoundTag tag = SmithingChainItem.incrementTemperCount(outputItemStack.getTag());
+                tag = SmithingChainItem.addNBTAspectTag(tag, quenchAspect);
+                outputItemStack.setTag(tag);
+            }
+
+
+
+
+
+
+            player.getInventory().setItem(player.getInventory().selected, outputItemStack);
+        }
     }
 
-    private void ingotToTool(Player player) {
-
-    }
 
 
 }
