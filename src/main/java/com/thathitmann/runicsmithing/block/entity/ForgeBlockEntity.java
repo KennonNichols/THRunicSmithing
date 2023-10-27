@@ -3,13 +3,9 @@ package com.thathitmann.runicsmithing.block.entity;
 
 import com.thathitmann.runicsmithing.generators.RSDynamicRecipeRegistry;
 import com.thathitmann.runicsmithing.generators.RSRecipeCategory;
-import com.thathitmann.runicsmithing.item.ModItems;
-import com.thathitmann.runicsmithing.item.custom.supers.HotIngotBase;
 import com.thathitmann.runicsmithing.item.custom.supers.SmithingChainItem;
-//import com.thathitmann.runicsmithing.recipe.ForgeRecipe;
 import com.thathitmann.runicsmithing.screen.ForgeBlockMenu;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
@@ -17,13 +13,10 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.Optional;
 
 import static com.thathitmann.runicsmithing.block.custom.ForgeBlock.LIT;
 
@@ -60,15 +53,19 @@ public class ForgeBlockEntity extends ForgeBlockEntityParent implements MenuProv
             }
 
 
-            if (entity.burnTime <= 0) {
-                level.setBlock(blockPos, blockState.setValue(LIT, false),3);
-            }
+            //if (entity.burnTime <= 0) {
+            //    setToUnlit(level, blockPos, blockState);
+            //}
         }
         //Cool down otherwise
         else {
+            if (entity.heatPercentage >= 100) {
+                setToUnlit(level, blockPos, blockState);
+            }
+
+
             if (entity.heatPercentage > 0) {
                 entity.heatPercentage--;
-                level.setBlock(blockPos, blockState.setValue(LIT, false),3);
             }
         }
 
@@ -96,14 +93,6 @@ public class ForgeBlockEntity extends ForgeBlockEntityParent implements MenuProv
 
     private static void craftItem(ForgeBlockEntityParent entity, SimpleContainer inventory) {
         if (hasRecipe(entity, inventory)) {
-            //Old json recipe
-            /*
-            Level level = entity.getLevel();
-            Optional<ForgeRecipe> recipe = level.getRecipeManager().getRecipeFor(ForgeRecipe.Type.INSTANCE, inventory, level);
-            Item forgeOutput = recipe.get().getResultItem().getItem();
-            */
-
-
             //New dynamic recipe
             Item forgeOutput = RSDynamicRecipeRegistry.getRecipeResult(RSRecipeCategory.FORGE_HEATING, inventory.getItem(0).getItem());
 
@@ -125,21 +114,9 @@ public class ForgeBlockEntity extends ForgeBlockEntityParent implements MenuProv
         if (RSDynamicRecipeRegistry.isItemAValidInput(itemInFirstSlot, RSRecipeCategory.FORGE_HEATING)) {
             output = RSDynamicRecipeRegistry.getRecipeResult(RSRecipeCategory.FORGE_HEATING, itemInFirstSlot);
             if (output instanceof SmithingChainItem) {
-                if (((SmithingChainItem) output).getMaterial().getPrimitive()) {hasValidMaterialInFirstSlot = true;};
+                if (((SmithingChainItem) output).getMaterial().getPrimitive()) {hasValidMaterialInFirstSlot = true;}
             }
         }
-
-
-        //Old recipe code
-        /*Optional<ForgeRecipe> recipe = level.getRecipeManager().getRecipeFor(ForgeRecipe.Type.INSTANCE, inventory, level);
-        if (recipe.isPresent()) {
-            Item forgeOutput = recipe.get().getResultItem().getItem();
-            if (forgeOutput instanceof SmithingChainItem) {
-                if (((SmithingChainItem) forgeOutput).getMaterial().getPrimitive()) {
-                    hasValidMaterialInFirstSlot = true;
-                }
-            }
-        }*/
 
 
 

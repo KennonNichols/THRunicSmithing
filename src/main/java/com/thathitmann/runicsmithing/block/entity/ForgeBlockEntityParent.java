@@ -4,8 +4,11 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.*;
 import net.minecraft.world.inventory.ContainerData;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -18,6 +21,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Random;
+
+import static com.thathitmann.runicsmithing.block.custom.ForgeBlock.LIT;
 
 
 public abstract class ForgeBlockEntityParent extends BlockEntity implements MenuProvider {
@@ -37,6 +42,15 @@ public abstract class ForgeBlockEntityParent extends BlockEntity implements Menu
         return Component.literal("Forge");
     }
 
+
+    protected static void setToLit(Level level, BlockPos blockPos, BlockState blockState) {
+        level.setBlock(blockPos, blockState.setValue(LIT, true),3);
+    }
+    protected static void setToUnlit(Level level, BlockPos blockPos, BlockState blockState) {
+        level.playSeededSound(null, blockPos.getX(), blockPos.getY(), blockPos.getZ(), SoundEvents.FIRE_EXTINGUISH, SoundSource.PLAYERS, 1f,1f,0);
+
+        level.setBlock(blockPos, blockState.setValue(LIT, false),3);
+    }
 
 
     protected final ContainerData data;
@@ -100,6 +114,7 @@ public abstract class ForgeBlockEntityParent extends BlockEntity implements Menu
     @Override
     public void onLoad() {
         super.onLoad();
+        setToUnlit(level, this.worldPosition, this.getBlockState());
         lazyItemHandler = LazyOptional.of(() -> itemHandler);
     }
 

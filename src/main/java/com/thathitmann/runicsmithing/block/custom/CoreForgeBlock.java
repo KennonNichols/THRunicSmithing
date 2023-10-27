@@ -6,6 +6,8 @@ import com.thathitmann.runicsmithing.item.ModItems;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -123,6 +125,7 @@ public class CoreForgeBlock extends BaseEntityBlock {
             if (heldItemStack.getItem() == ModItems.CHARCOAL_BRIQUETTE.get()) {
                 if (blockEntity instanceof CoreForgeBlockEntity) {
                     level.setBlock(blockPos, state.setValue(LIT, true),3);
+                    level.playSeededSound(null, blockPos.getX(), blockPos.getY(), blockPos.getZ(), SoundEvents.FIRECHARGE_USE, SoundSource.PLAYERS, 1f,1f,0);
                     ((CoreForgeBlockEntity) blockEntity).addFuel(400);
                     heldItemStack.setCount(heldItemStack.getCount()-1);
                 }

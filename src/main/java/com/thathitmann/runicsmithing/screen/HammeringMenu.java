@@ -8,6 +8,8 @@ import com.thathitmann.runicsmithing.item.custom.supers.ForgeLevel;
 import com.thathitmann.runicsmithing.item.custom.supers.SmithingChainItem;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -103,10 +105,12 @@ public class HammeringMenu extends AbstractContainerMenu {
                     tag = SmithingChainItem.addNBTAspectTag(tag, new Aspect("Forged with iron tools for +3 quality.", 3));
                 }
                 outputItemStack.setTag(tag);
+                //player.level().playSeededSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ANVIL_USE, SoundSource.PLAYERS, 1f,1f,0);
                 player.getInventory().setItem(player.getInventory().selected, outputItemStack);
             }
             else {
                 //Destroy invalid recipes
+                //player.level().playSeededSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ITEM_BREAK, SoundSource.PLAYERS, 1f,1f,0);
                 player.getInventory().setItem(player.getInventory().selected, new ItemStack(Items.AIR));
             }
         }

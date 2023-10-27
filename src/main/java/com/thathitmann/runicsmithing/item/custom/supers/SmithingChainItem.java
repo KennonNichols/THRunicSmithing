@@ -4,11 +4,17 @@ import com.thathitmann.runicsmithing.block.ModBlocks;
 import com.thathitmann.runicsmithing.block.custom.WoodenBasinBlock;
 import com.thathitmann.runicsmithing.generators.RSDynamicRecipeRegistry;
 import com.thathitmann.runicsmithing.generators.RSRecipeCategory;
+import com.thathitmann.runicsmithing.item.ModItems;
+import com.thathitmann.runicsmithing.sound.ModSounds;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.resources.sounds.Sound;
+import net.minecraft.client.sounds.SoundEngine;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -122,25 +128,67 @@ public class SmithingChainItem extends Item {
             if (player.getMainHandItem().getItem() == this) {
                 BlockState interactedState = level.getBlockState(blockpos);
 
+
+
+                //region quenching
                 //If clicking on a filled wooden basin
                 if (((interactedState.is(ModBlocks.WOODEN_BASIN_BLOCK.get())))) {
                     if (interactedState.getValue(WoodenBasinBlock.FILLED)) {
                         coolInMainHand(player, quenchAspect);
                     }
-                } else if (interactedState.is(Blocks.WATER_CAULDRON)) {
+                }
+                else if (interactedState.is(Blocks.WATER_CAULDRON)) {
                     coolInMainHand(player, temperAspect);
                 }
+
+                //endregion
+
+
+                //region grinding
+
+                //If clicking on a grindstone
+                if (((interactedState.is(Blocks.GRINDSTONE)))) {
+                   sharpenInMainHand(player);
+                }
+
+                //endregion
+
+
             }
         }
         return InteractionResult.PASS;
     }
 
 
+    private void sharpenInMainHand(Player player) {
+        if (this instanceof ForgedToolBase) {
+            ItemStack inputItemStack = player.getMainHandItem();
+
+            //If we are only doing one, just change the held item
+            if (inputItemStack.getCount() == 1) {
+                player.level().playSeededSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.GRINDSTONE_USE, SoundSource.PLAYERS, 1f, 1f, 0);
+
+                ItemStack outputItemStack = new ItemStack(ModItems.FORGED_TOOL.get(), 1);
+
+                CompoundTag tag = inputItemStack.getTag();
+                CompoundTag newTag = new CompoundTag();
+
+                //Transfer only the quality to the forged tool
+                newTag.putInt("runicsmithing.quality", tag.getInt("runicsmithing.quality"));
+                outputItemStack.setTag(newTag);
+                ForgedTool.applyMaterial(this.getMaterial(), outputItemStack);
+                player.getInventory().setItem(player.getInventory().selected, outputItemStack);
+            }
+
+        }
+    }
+
 
     private void coolInMainHand(Player player, Aspect quenchAspect) {
         Item coolingResult = this.getCoolingResult();
 
         if (coolingResult != null) {
+            player.level().playSeededSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.LAVA_EXTINGUISH, SoundSource.PLAYERS, 1f,1f,0);
 
             ItemStack inputItemStack = player.getMainHandItem();
             ItemStack outputItemStack = new ItemStack(coolingResult, inputItemStack.getCount());

@@ -1,4 +1,4 @@
-package com.thathitmann.runicsmithing.item.custom.supers;
+package com.thathitmann.runicsmithing.generators;
 
 import net.minecraft.world.item.Item;
 import net.minecraftforge.registries.RegistryObject;
@@ -27,6 +27,8 @@ public class GeneratedItemRegistry {
         jsonText.append("\"block.runicsmithing.stone_anvil_block\": \"Stone Anvil\",\n");
         jsonText.append("\"block.runicsmithing.wooden_basin_block\": \"Wooden Basin\",\n");
         jsonText.append("\"creativemodetab:runicsmithing_tab\": \"Runic Smithing\",\n");
+        //Subtitles
+        jsonText.append("\"sounds.runicsmithing.tong_clicking\": \"Tongs Click\",\n");
 
 
 

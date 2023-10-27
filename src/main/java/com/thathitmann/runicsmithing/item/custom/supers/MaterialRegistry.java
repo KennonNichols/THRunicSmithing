@@ -1,5 +1,6 @@
 package com.thathitmann.runicsmithing.item.custom.supers;
 
+import com.thathitmann.runicsmithing.generators.GeneratedItemRegistry;
 import com.thathitmann.runicsmithing.generators.RSDynamicRecipeRegistry;
 import com.thathitmann.runicsmithing.generators.RSRawDynamicRecipe;
 import com.thathitmann.runicsmithing.generators.RSRecipeCategory;
@@ -11,13 +12,15 @@ import org.apache.commons.lang3.StringUtils;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
+import java.util.HashMap;
 
 public class MaterialRegistry {
-    @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
-    private final static List<RunicSmithingMaterial> materials = new ArrayList<>();
+    private final static HashMap<String, RunicSmithingMaterial> materials = new HashMap<>();
+
+    public static RunicSmithingMaterial getMaterialFromRegistry(String materialKey) {
+        return materials.get(materialKey);
+    }
 
 
     public static void addMaterialToRegistry(Item associatedItem, String name) {
@@ -58,8 +61,8 @@ public class MaterialRegistry {
 
 
 
-        //Add material to list
-        materials.add(material);
+        //Add material to registry
+        materials.put(name, material);
 
 
 
@@ -167,7 +170,7 @@ public class MaterialRegistry {
         //creates ingot name
         fileName = "base_forged_" + name + "_pickaxe";
         //Register the ingot to ModItems
-        RegistryObject<Item> newBasePickaxe = ModItems.ITEMS.register(fileName, () -> new SmithingChainItem(new Item.Properties(), material));
+        RegistryObject<Item> newBasePickaxe = ModItems.ITEMS.register(fileName, () -> new ForgedToolBase(new Item.Properties(), material));
         //Add the pickaxe to the stupid list
         GeneratedItemRegistry.itemsToAddToCreativeModeTabBecauseOfThisNonsense.add(newBasePickaxe);
         //Add it to translation list
@@ -183,7 +186,7 @@ public class MaterialRegistry {
         //creates ingot name
         fileName = "base_forged_" + name + "_axe";
         //Register the ingot to ModItems
-        RegistryObject<Item> newBaseAxe = ModItems.ITEMS.register(fileName, () -> new SmithingChainItem(new Item.Properties(), material));
+        RegistryObject<Item> newBaseAxe = ModItems.ITEMS.register(fileName, () -> new ForgedToolBase(new Item.Properties(), material));
         //Add the axe to the stupid list
         GeneratedItemRegistry.itemsToAddToCreativeModeTabBecauseOfThisNonsense.add(newBaseAxe);
         //Add it to translation list
@@ -199,7 +202,7 @@ public class MaterialRegistry {
         //creates ingot name
         fileName = "base_forged_" + name + "_shovel";
         //Register the ingot to ModItems
-        RegistryObject<Item> newBaseShovel = ModItems.ITEMS.register(fileName, () -> new SmithingChainItem(new Item.Properties(), material));
+        RegistryObject<Item> newBaseShovel = ModItems.ITEMS.register(fileName, () -> new ForgedToolBase(new Item.Properties(), material));
         //Add the pickaxe to the stupid list
         GeneratedItemRegistry.itemsToAddToCreativeModeTabBecauseOfThisNonsense.add(newBaseShovel);
         //Add it to translation list
@@ -215,7 +218,7 @@ public class MaterialRegistry {
         //creates ingot name
         fileName = "base_forged_" + name + "_hoe";
         //Register the ingot to ModItems
-        RegistryObject<Item> newBaseHoe = ModItems.ITEMS.register(fileName, () -> new SmithingChainItem(new Item.Properties(), material));
+        RegistryObject<Item> newBaseHoe = ModItems.ITEMS.register(fileName, () -> new ForgedToolBase(new Item.Properties(), material));
         //Add the pickaxe to the stupid list
         GeneratedItemRegistry.itemsToAddToCreativeModeTabBecauseOfThisNonsense.add(newBaseHoe);
         //Add it to translation list
@@ -231,7 +234,7 @@ public class MaterialRegistry {
         //creates ingot name
         fileName = "base_forged_" + name + "_sword";
         //Register the ingot to ModItems
-        RegistryObject<Item> newBaseSword = ModItems.ITEMS.register(fileName, () -> new SmithingChainItem(new Item.Properties(), material));
+        RegistryObject<Item> newBaseSword = ModItems.ITEMS.register(fileName, () -> new ForgedToolBase(new Item.Properties(), material));
         //Add the pickaxe to the stupid list
         GeneratedItemRegistry.itemsToAddToCreativeModeTabBecauseOfThisNonsense.add(newBaseSword);
         //Add it to translation list

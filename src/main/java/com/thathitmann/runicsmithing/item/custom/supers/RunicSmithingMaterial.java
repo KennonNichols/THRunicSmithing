@@ -7,9 +7,8 @@ public class RunicSmithingMaterial {
     private final String materialName;
     private final Boolean isPrimitive;
 
-
+    public String getMaterialName() {return materialName;}
     public Item getAssociatedIngot() {return associatedIngot;}
-
     public Boolean getPrimitive() {return isPrimitive;}
 
     public RunicSmithingMaterial(Item associatedIngot, String materialName, Boolean isPrimitive){

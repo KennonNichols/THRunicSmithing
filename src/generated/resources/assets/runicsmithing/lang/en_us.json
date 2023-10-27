@@ -8,6 +8,7 @@
 "block.runicsmithing.stone_anvil_block": "Stone Anvil",
 "block.runicsmithing.wooden_basin_block": "Wooden Basin",
 "creativemodetab:runicsmithing_tab": "Runic Smithing",
+"sounds.runicsmithing.tong_clicking": "Tongs Click",
 "item.runicsmithing.hot_copper_ingot": "Hot Copper",
 "item.runicsmithing.hot_forged_copper_pickaxe": "Hot Copper Pickaxe",
 "item.runicsmithing.hot_forged_copper_axe": "Hot Copper Axe",

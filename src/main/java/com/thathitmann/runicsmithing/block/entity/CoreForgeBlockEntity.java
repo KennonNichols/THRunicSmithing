@@ -58,16 +58,17 @@ public class CoreForgeBlockEntity extends ForgeBlockEntityParent implements Menu
                 entity.heatPercentage++;
             }
 
-
-            if (entity.burnTime <= 0) {
-                level.setBlock(blockPos, blockState.setValue(LIT, false),3);
-            }
+            //if (entity.burnTime <= 0) {
+            //    setToUnlit(level, blockPos, blockState);
+            //}
         }
         //Cool down otherwise
         else {
+            if (entity.heatPercentage >= 100) {
+                setToUnlit(level, blockPos, blockState);
+            }
             if (entity.heatPercentage > 0) {
                 entity.heatPercentage--;
-                level.setBlock(blockPos, blockState.setValue(LIT, false),3);
             }
         }
 

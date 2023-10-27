@@ -7,11 +7,12 @@ import com.thathitmann.runicsmithing.block.entity.ModBlockEntities;
 import com.thathitmann.runicsmithing.generators.RSDynamicRecipeRegistry;
 import com.thathitmann.runicsmithing.item.ModCreativeTab;
 import com.thathitmann.runicsmithing.item.ModItems;
-import com.thathitmann.runicsmithing.item.custom.supers.GeneratedItemRegistry;
+import com.thathitmann.runicsmithing.generators.GeneratedItemRegistry;
 import com.thathitmann.runicsmithing.screen.CoreForgeBlockScreen;
 import com.thathitmann.runicsmithing.screen.ForgeBlockScreen;
 import com.thathitmann.runicsmithing.screen.HammeringScreen;
 import com.thathitmann.runicsmithing.screen.ModMenuTypes;
+import com.thathitmann.runicsmithing.sound.ModSounds;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
@@ -53,6 +54,8 @@ public class RunicSmithing
         ModBlockEntities.register(modEventBus);
         //Register the menus
         ModMenuTypes.register(modEventBus);
+        //Register sounds
+        ModSounds.register(modEventBus);
         //Register the recipes
         //ModRecipes.register(modEventBus);
         // Register the commonSetup method for modloading

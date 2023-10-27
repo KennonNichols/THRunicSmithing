@@ -47,6 +47,9 @@ public class ModItems {
             });
 
 
+    //Tool
+    public static final RegistryObject<Item> FORGED_TOOL = ITEMS.register("forged_tool",
+            () -> new ForgedTool(new Item.Properties()));
 
 
 
