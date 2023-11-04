@@ -19,6 +19,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.PickaxeItem;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
@@ -169,7 +170,6 @@ public class SmithingChainItem extends Item {
                 player.level().playSeededSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.GRINDSTONE_USE, SoundSource.PLAYERS, 1f, 1f, 0);
 
                 ItemStack outputItemStack = new ItemStack(ModItems.FORGED_TOOL.get(), 1);
-
                 CompoundTag tag = inputItemStack.getTag();
                 CompoundTag newTag = new CompoundTag();
 

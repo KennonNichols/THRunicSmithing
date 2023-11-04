@@ -17,6 +17,7 @@ import java.util.HashMap;
 
 public class MaterialRegistry {
     private final static HashMap<String, RunicSmithingMaterial> materials = new HashMap<>();
+    private static final String filePath = "../src/generated/resources/assets/runicsmithing/models/item/";
 
     public static RunicSmithingMaterial getMaterialFromRegistry(String materialKey) {
         return materials.get(materialKey);
@@ -33,12 +34,12 @@ public class MaterialRegistry {
         addMaterialToRegistry(associatedItem, name, suffix, false);
     }
 
-    private static void buildModelJson(String filePath, String fileName) {
-        buildModelJson(filePath, fileName, fileName);
+    private static void buildModelJson(String fileName) {
+        buildModelJson(fileName, fileName);
     }
 
 
-    private static void buildModelJson(String filePath, String fileName, String textureName) {
+    private static void buildModelJson(String fileName, String textureName) {
         File newModel = new File(filePath + fileName + ".json");
         try {
             newModel.createNewFile();
@@ -66,10 +67,9 @@ public class MaterialRegistry {
 
 
 
-        String filePath = "../src/generated/resources/assets/runicsmithing/models/item/";
 
 
-
+        //Create the hot ingot
         //region hot ingot
         //creates ingot name
         String fileName = "hot_" + name + suffix;
@@ -83,187 +83,57 @@ public class MaterialRegistry {
         RSRawDynamicRecipe newRawRecipe = new RSRawDynamicRecipe(associatedItem, newHotIngot, RSRecipeCategory.FORGE_HEATING, null);
         RSDynamicRecipeRegistry.addNewRawRecipe(newRawRecipe);
         //Add item model
-        buildModelJson(filePath, fileName);
+        buildModelJson(fileName);
         //endregion
 
-        //region hot pickaxe
-        //creates ingot name
-        fileName = "hot_forged_" + name + "_pickaxe";
-        //Register the ingot to ModItems
-        RegistryObject<Item> newHotPickaxe = ModItems.ITEMS.register(fileName, () -> new HotForgedToolBase(new Item.Properties(), material));
-        //Add the pickaxe to the stupid list
-        GeneratedItemRegistry.itemsToAddToCreativeModeTabBecauseOfThisNonsense.add(newHotPickaxe);
-        //Add it to translation list
-        GeneratedItemRegistry.itemsToAddToLangFile.add("\"item.runicsmithing." + fileName + "\": \"Hot " + StringUtils.capitalize(name) + " Pickaxe\"");
-        //add forge heating recipe
-        newRawRecipe = new RSRawDynamicRecipe(newHotIngot, newHotPickaxe, RSRecipeCategory.SHAPED_HAMMERING, Arrays.asList(RSDynamicRecipeRegistry.PICKAXE_SHAPE));
-        RSDynamicRecipeRegistry.addNewRawRecipe(newRawRecipe);
-        //Add item model
-        buildModelJson(filePath, fileName);
-        //endregion
 
-        //region hot axe
-        //creates ingot name
-        fileName = "hot_forged_" + name + "_axe";
-        //Register the ingot to ModItems
-        RegistryObject<Item> newHotAxe = ModItems.ITEMS.register(fileName, () -> new HotForgedToolBase(new Item.Properties(), material));
-        //Add the axe to the stupid list
-        GeneratedItemRegistry.itemsToAddToCreativeModeTabBecauseOfThisNonsense.add(newHotAxe);
-        //Add it to translation list
-        GeneratedItemRegistry.itemsToAddToLangFile.add("\"item.runicsmithing." + fileName + "\": \"Hot " + StringUtils.capitalize(name) + " Axe\"");
-        //add forge heating recipe
-        newRawRecipe = new RSRawDynamicRecipe(newHotIngot, newHotAxe, RSRecipeCategory.SHAPED_HAMMERING, Arrays.asList(RSDynamicRecipeRegistry.AXE_SHAPE));
-        RSDynamicRecipeRegistry.addNewRawRecipe(newRawRecipe);
-        //Add item model
-        buildModelJson(filePath, fileName);
-        //endregion
-
-        //region hot shovel
-        //creates ingot name
-        fileName = "hot_forged_" + name + "_shovel";
-        //Register the ingot to ModItems
-        RegistryObject<Item> newHotShovel = ModItems.ITEMS.register(fileName, () -> new HotForgedToolBase(new Item.Properties(), material));
-        //Add the pickaxe to the stupid list
-        GeneratedItemRegistry.itemsToAddToCreativeModeTabBecauseOfThisNonsense.add(newHotShovel);
-        //Add it to translation list
-        GeneratedItemRegistry.itemsToAddToLangFile.add("\"item.runicsmithing." + fileName + "\": \"Hot " + StringUtils.capitalize(name) + " Shovel\"");
-        //add forge heating recipe
-        newRawRecipe = new RSRawDynamicRecipe(newHotIngot, newHotShovel, RSRecipeCategory.SHAPED_HAMMERING, Arrays.asList(RSDynamicRecipeRegistry.SHOVEL_SHAPE));
-        RSDynamicRecipeRegistry.addNewRawRecipe(newRawRecipe);
-        //Add item model
-        buildModelJson(filePath, fileName);
-        //endregion
-
-        //region hot hoe
-        //creates ingot name
-        fileName = "hot_forged_" + name + "_hoe";
-        //Register the ingot to ModItems
-        RegistryObject<Item> newHotHoe = ModItems.ITEMS.register(fileName, () -> new HotForgedToolBase(new Item.Properties(), material));
-        //Add the pickaxe to the stupid list
-        GeneratedItemRegistry.itemsToAddToCreativeModeTabBecauseOfThisNonsense.add(newHotHoe);
-        //Add it to translation list
-        GeneratedItemRegistry.itemsToAddToLangFile.add("\"item.runicsmithing." + fileName + "\": \"Hot " + StringUtils.capitalize(name) + " Hoe\"");
-        //add forge heating recipe
-        newRawRecipe = new RSRawDynamicRecipe(newHotIngot, newHotHoe, RSRecipeCategory.SHAPED_HAMMERING, Arrays.asList(RSDynamicRecipeRegistry.HOE_SHAPE));
-        RSDynamicRecipeRegistry.addNewRawRecipe(newRawRecipe);
-        //Add item model
-        buildModelJson(filePath, fileName);
-        //endregion
-
-        //region hot sword
-        //creates ingot name
-        fileName = "hot_forged_" + name + "_sword";
-        //Register the ingot to ModItems
-        RegistryObject<Item> newHotSword = ModItems.ITEMS.register(fileName, () -> new HotForgedToolBase(new Item.Properties(), material));
-        //Add the pickaxe to the stupid list
-        GeneratedItemRegistry.itemsToAddToCreativeModeTabBecauseOfThisNonsense.add(newHotSword);
-        //Add it to translation list
-        GeneratedItemRegistry.itemsToAddToLangFile.add("\"item.runicsmithing." + fileName + "\": \"Hot " + StringUtils.capitalize(name) + " Sword\"");
-        //add forge heating recipe
-        newRawRecipe = new RSRawDynamicRecipe(newHotIngot, newHotSword, RSRecipeCategory.SHAPED_HAMMERING, Arrays.asList(RSDynamicRecipeRegistry.SWORD_SHAPE));
-        RSDynamicRecipeRegistry.addNewRawRecipe(newRawRecipe);
-        //Add item model
-        buildModelJson(filePath, fileName);
-        //endregion
-
-        //region base pickaxe
-        //creates ingot name
-        fileName = "base_forged_" + name + "_pickaxe";
-        //Register the ingot to ModItems
-        RegistryObject<Item> newBasePickaxe = ModItems.ITEMS.register(fileName, () -> new ForgedToolBase(new Item.Properties(), material));
-        //Add the pickaxe to the stupid list
-        GeneratedItemRegistry.itemsToAddToCreativeModeTabBecauseOfThisNonsense.add(newBasePickaxe);
-        //Add it to translation list
-        GeneratedItemRegistry.itemsToAddToLangFile.add("\"item.runicsmithing." + fileName + "\": \"Base " + StringUtils.capitalize(name) + " Pickaxe\"");
-        //add forge heating recipe
-        newRawRecipe = new RSRawDynamicRecipe(newHotPickaxe, newBasePickaxe, RSRecipeCategory.QUENCHING, null);
-        RSDynamicRecipeRegistry.addNewRawRecipe(newRawRecipe);
-        //Add item model
-        buildModelJson(filePath, fileName,"forged_" + name + "_pickaxe");
-        //endregion
-
-        //region base axe
-        //creates ingot name
-        fileName = "base_forged_" + name + "_axe";
-        //Register the ingot to ModItems
-        RegistryObject<Item> newBaseAxe = ModItems.ITEMS.register(fileName, () -> new ForgedToolBase(new Item.Properties(), material));
-        //Add the axe to the stupid list
-        GeneratedItemRegistry.itemsToAddToCreativeModeTabBecauseOfThisNonsense.add(newBaseAxe);
-        //Add it to translation list
-        GeneratedItemRegistry.itemsToAddToLangFile.add("\"item.runicsmithing." + fileName + "\": \"Base " + StringUtils.capitalize(name) + " Axe\"");
-        //add forge heating recipe
-        newRawRecipe = new RSRawDynamicRecipe(newHotAxe, newBaseAxe, RSRecipeCategory.QUENCHING, null);
-        RSDynamicRecipeRegistry.addNewRawRecipe(newRawRecipe);
-        //Add item model
-        buildModelJson(filePath, fileName,"forged_" + name + "_axe");
-        //endregion
-
-        //region base shovel
-        //creates ingot name
-        fileName = "base_forged_" + name + "_shovel";
-        //Register the ingot to ModItems
-        RegistryObject<Item> newBaseShovel = ModItems.ITEMS.register(fileName, () -> new ForgedToolBase(new Item.Properties(), material));
-        //Add the pickaxe to the stupid list
-        GeneratedItemRegistry.itemsToAddToCreativeModeTabBecauseOfThisNonsense.add(newBaseShovel);
-        //Add it to translation list
-        GeneratedItemRegistry.itemsToAddToLangFile.add("\"item.runicsmithing." + fileName + "\": \"Base " + StringUtils.capitalize(name) + " Shovel\"");
-        //add forge heating recipe
-        newRawRecipe = new RSRawDynamicRecipe(newHotShovel, newBaseShovel, RSRecipeCategory.QUENCHING, null);
-        RSDynamicRecipeRegistry.addNewRawRecipe(newRawRecipe);
-        //Add item model
-        buildModelJson(filePath, fileName,"forged_" + name + "_shovel");
-        //endregion
-
-        //region base hoe
-        //creates ingot name
-        fileName = "base_forged_" + name + "_hoe";
-        //Register the ingot to ModItems
-        RegistryObject<Item> newBaseHoe = ModItems.ITEMS.register(fileName, () -> new ForgedToolBase(new Item.Properties(), material));
-        //Add the pickaxe to the stupid list
-        GeneratedItemRegistry.itemsToAddToCreativeModeTabBecauseOfThisNonsense.add(newBaseHoe);
-        //Add it to translation list
-        GeneratedItemRegistry.itemsToAddToLangFile.add("\"item.runicsmithing." + fileName + "\": \"Base " + StringUtils.capitalize(name) + " Hoe\"");
-        //add forge heating recipe
-        newRawRecipe = new RSRawDynamicRecipe(newHotHoe, newBaseHoe, RSRecipeCategory.QUENCHING, null);
-        RSDynamicRecipeRegistry.addNewRawRecipe(newRawRecipe);
-        //Add item model
-        buildModelJson(filePath, fileName,"forged_" + name + "_hoe");
-        //endregion
-
-        //region base sword
-        //creates ingot name
-        fileName = "base_forged_" + name + "_sword";
-        //Register the ingot to ModItems
-        RegistryObject<Item> newBaseSword = ModItems.ITEMS.register(fileName, () -> new ForgedToolBase(new Item.Properties(), material));
-        //Add the pickaxe to the stupid list
-        GeneratedItemRegistry.itemsToAddToCreativeModeTabBecauseOfThisNonsense.add(newBaseSword);
-        //Add it to translation list
-        GeneratedItemRegistry.itemsToAddToLangFile.add("\"item.runicsmithing." + fileName + "\": \"Base " + StringUtils.capitalize(name) + " Sword\"");
-        //add forge heating recipe
-        newRawRecipe = new RSRawDynamicRecipe(newHotSword, newBaseSword, RSRecipeCategory.QUENCHING, null);
-        RSDynamicRecipeRegistry.addNewRawRecipe(newRawRecipe);
-        //Add item model
-        buildModelJson(filePath, fileName,"forged_" + name + "_sword");
-        //endregion
-
-        //region reheating
-        newRawRecipe = new RSRawDynamicRecipe(newBasePickaxe, newHotPickaxe, RSRecipeCategory.FORGE_HEATING, null);
-        RSDynamicRecipeRegistry.addNewRawRecipe(newRawRecipe);
-        newRawRecipe = new RSRawDynamicRecipe(newBaseAxe, newHotAxe, RSRecipeCategory.FORGE_HEATING, null);
-        RSDynamicRecipeRegistry.addNewRawRecipe(newRawRecipe);
-        newRawRecipe = new RSRawDynamicRecipe(newBaseHoe, newHotHoe, RSRecipeCategory.FORGE_HEATING, null);
-        RSDynamicRecipeRegistry.addNewRawRecipe(newRawRecipe);
-        newRawRecipe = new RSRawDynamicRecipe(newBaseShovel, newHotShovel, RSRecipeCategory.FORGE_HEATING, null);
-        RSDynamicRecipeRegistry.addNewRawRecipe(newRawRecipe);
-        newRawRecipe = new RSRawDynamicRecipe(newBaseSword, newHotSword, RSRecipeCategory.FORGE_HEATING, null);
-        RSDynamicRecipeRegistry.addNewRawRecipe(newRawRecipe);
-        //endregion
-
+        for (ToolType type : ToolType.values()) {
+            createToolComponents(type, newHotIngot, material);
+        }
 
 
 
 
     }
+
+
+    private static void createToolComponents(ToolType type, RegistryObject<Item> hotIngot, RunicSmithingMaterial material) {
+        //region hot tool
+        //creates tool name
+        String fileName = "hot_forged_" + material.getMaterialName() + "_" + type.getName();
+        //Register the tool to ModItems
+        RegistryObject<Item> newHotTool = ModItems.ITEMS.register(fileName, () -> new HotForgedToolBase(new Item.Properties(), material));
+        //Add the tool to the stupid list
+        GeneratedItemRegistry.itemsToAddToCreativeModeTabBecauseOfThisNonsense.add(newHotTool);
+        //Add it to translation list
+        GeneratedItemRegistry.itemsToAddToLangFile.add(String.format("\"item.runicsmithing.%s\": \"Hot %s %s\"", fileName, StringUtils.capitalize(material.getMaterialName()), type.getCapitalizedName()));
+        //add hammering recipe
+        RSDynamicRecipeRegistry.addNewRawRecipe(new RSRawDynamicRecipe(hotIngot, newHotTool, RSRecipeCategory.SHAPED_HAMMERING, Arrays.asList(type.getShape())));
+        //Add item model
+        buildModelJson(fileName);
+        //endregion
+
+
+        //region base tool
+        //creates tool name
+        fileName = "base_forged_" + material.getMaterialName() + "_" + type.getName();
+        //Register the tool to ModItems
+        RegistryObject<Item> newBaseTool = ModItems.ITEMS.register(fileName, () -> new ForgedToolBase(new Item.Properties(), material, type));
+        //Add the tool to the stupid list
+        GeneratedItemRegistry.itemsToAddToCreativeModeTabBecauseOfThisNonsense.add(newBaseTool);
+        //Add it to translation list
+        GeneratedItemRegistry.itemsToAddToLangFile.add(String.format("\"item.runicsmithing.%s\": \"Base %s %s\"", fileName, StringUtils.capitalize(material.getMaterialName()), type.getCapitalizedName()));
+        //add forge heating recipe
+        RSDynamicRecipeRegistry.addNewRawRecipe(new RSRawDynamicRecipe(newHotTool, newBaseTool, RSRecipeCategory.QUENCHING, null));
+        //Add item model
+        buildModelJson(fileName,"forged_" + material.getMaterialName() + "_" + type.getName());
+        //endregion
+
+
+        //Adds heating recipe
+        RSDynamicRecipeRegistry.addNewRawRecipe(new RSRawDynamicRecipe(newBaseTool, newHotTool, RSRecipeCategory.FORGE_HEATING, null));
+    }
+
 
 
 

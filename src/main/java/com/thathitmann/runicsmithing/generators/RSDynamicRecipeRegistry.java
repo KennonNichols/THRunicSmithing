@@ -35,6 +35,9 @@ public final class RSDynamicRecipeRegistry {
             g, p, g,
             g, p, g};
 
+
+
+
     public static @NotNull Boolean isItemAValidInput(Item item, RSRecipeCategory recipeCategory) {
         for (RSDynamicRecipe recipe : recipes) {
             if (recipe.input() == item && recipe.category() == recipeCategory) {return true;}
