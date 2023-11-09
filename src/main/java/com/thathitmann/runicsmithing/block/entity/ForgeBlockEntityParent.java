@@ -43,9 +43,6 @@ public abstract class ForgeBlockEntityParent extends BlockEntity implements Menu
     }
 
 
-    protected static void setToLit(Level level, BlockPos blockPos, BlockState blockState) {
-        level.setBlock(blockPos, blockState.setValue(LIT, true),3);
-    }
     protected static void setToUnlit(Level level, BlockPos blockPos, BlockState blockState) {
         level.playSeededSound(null, blockPos.getX(), blockPos.getY(), blockPos.getZ(), SoundEvents.FIRE_EXTINGUISH, SoundSource.PLAYERS, 1f,1f,0);
 
@@ -59,7 +56,7 @@ public abstract class ForgeBlockEntityParent extends BlockEntity implements Menu
     protected int maxProgress = 80;
     protected int maxBurnTime = 2000;
     protected int burnTime = 0;
-    protected static Random rand = new Random();
+    protected static final Random rand = new Random();
 
 
     protected int heatPercentage = 0;

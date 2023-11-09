@@ -8,16 +8,21 @@ import com.thathitmann.runicsmithing.generators.RSDynamicRecipeRegistry;
 import com.thathitmann.runicsmithing.item.ModCreativeTab;
 import com.thathitmann.runicsmithing.item.ModItems;
 import com.thathitmann.runicsmithing.generators.GeneratedItemRegistry;
+import com.thathitmann.runicsmithing.item.custom.supers.GeneratableItem;
+import com.thathitmann.runicsmithing.item.custom.supers.RunicSmithingMaterial;
 import com.thathitmann.runicsmithing.screen.CoreForgeBlockScreen;
 import com.thathitmann.runicsmithing.screen.ForgeBlockScreen;
 import com.thathitmann.runicsmithing.screen.HammeringScreen;
 import com.thathitmann.runicsmithing.screen.ModMenuTypes;
 import com.thathitmann.runicsmithing.sound.ModSounds;
 import net.minecraft.client.gui.screens.MenuScreens;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
@@ -27,7 +32,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.registries.RegistryObject;
+import org.apache.commons.lang3.StringUtils;
 //import org.slf4j.Logger;
 
 // The value here should match an entry in the META-INF/mods.toml file
@@ -70,7 +75,7 @@ public class RunicSmithing
 
 
 
-    private void commonSetup(final FMLCommonSetupEvent event)
+    private void commonSetup(final FMLCommonSetupEvent ignoredEvent)
     {
         //Cook the recipes on world open
         RSDynamicRecipeRegistry.cook();
@@ -79,15 +84,28 @@ public class RunicSmithing
 
     private void addCreative(BuildCreativeModeTabContentsEvent event) {
         if(event.getTabKey() == ModCreativeTab.TAB.getKey()) {
-            for (RegistryObject<Item> item : GeneratedItemRegistry.itemsToAddToCreativeModeTabBecauseOfThisNonsense)
-            {
-                event.accept(item);
-            }
             event.accept(ModItems.CHARCOAL_BRIQUETTE);
             event.accept(ModItems.GLOVES);
             event.accept(ModItems.IRON_SMITHING_HAMMER);
             event.accept(ModItems.STONE_SMITHING_HAMMER);
             event.accept(ModItems.TONGS);
+
+
+            //Generated stuff
+            for (RunicSmithingMaterial material : RunicSmithingMaterial.getNonNoneMaterials()) {
+                for (GeneratableItem item : GeneratedItemRegistry.generatedItems) {
+                    CompoundTag tag = new CompoundTag();
+                    ItemStack newItemStack = new ItemStack(item.item().get(), 1);
+                    tag.putInt("CustomModelData", material.ordinal());
+                    tag.putInt("runicsmithing.material", material.ordinal());
+                    newItemStack.setTag(tag);
+                    newItemStack.setHoverName(Component.literal(String.format(item.formatableName(), StringUtils.capitalize(material.getMaterialName()))));
+                    event.accept(newItemStack);
+                }
+            }
+
+
+
 
             event.accept(ModBlocks.FORGE_BLOCK);
             event.accept(ModBlocks.CORE_FORGE_BLOCK);

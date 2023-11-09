@@ -1,8 +1,7 @@
 package com.thathitmann.runicsmithing.event;
 
 import com.thathitmann.runicsmithing.RunicSmithing;
-import com.thathitmann.runicsmithing.item.custom.supers.HotIngotBase;
-import com.thathitmann.runicsmithing.item.custom.supers.SmithingChainItem;
+import com.thathitmann.runicsmithing.item.custom.supers.smithing_chain.SmithingChainItem;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -24,6 +23,7 @@ public class ModEvents {
     public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
         if (event.side == LogicalSide.SERVER) {
             Player player = event.player;
+
             if (player.getInventory().contains(burningHotTag)) {
                 if(!player.getInventory().contains(heatInsulatingTag)) {
                     if (!player.isOnFire()) {
@@ -35,7 +35,7 @@ public class ModEvents {
     }
 
 
-    //Cool any burning hot item. This is an anti-troll measure.
+    //Cool any burning hot item when thrown. This is an anti-troll measure.
     @SubscribeEvent
     public static void onEntityToss(ItemTossEvent event) {
         //if (event.side == LogicalSide.SERVER) {}

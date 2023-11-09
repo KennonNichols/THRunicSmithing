@@ -3,9 +3,13 @@ package com.thathitmann.runicsmithing.block.entity;
 
 import com.thathitmann.runicsmithing.generators.RSDynamicRecipeRegistry;
 import com.thathitmann.runicsmithing.generators.RSRecipeCategory;
-import com.thathitmann.runicsmithing.item.custom.supers.SmithingChainItem;
+import com.thathitmann.runicsmithing.item.ModItems;
+import com.thathitmann.runicsmithing.item.custom.supers.RunicSmithingMaterial;
+import com.thathitmann.runicsmithing.item.custom.supers.smithing_chain.ToolBase;
 import com.thathitmann.runicsmithing.screen.ForgeBlockMenu;
 import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
@@ -15,10 +19,9 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import static com.thathitmann.runicsmithing.block.custom.ForgeBlock.LIT;
 
 public class ForgeBlockEntity extends ForgeBlockEntityParent implements MenuProvider {
 
@@ -53,9 +56,6 @@ public class ForgeBlockEntity extends ForgeBlockEntityParent implements MenuProv
             }
 
 
-            //if (entity.burnTime <= 0) {
-            //    setToUnlit(level, blockPos, blockState);
-            //}
         }
         //Cool down otherwise
         else {
@@ -93,14 +93,34 @@ public class ForgeBlockEntity extends ForgeBlockEntityParent implements MenuProv
 
     private static void craftItem(ForgeBlockEntityParent entity, SimpleContainer inventory) {
         if (hasRecipe(entity, inventory)) {
-            //New dynamic recipe
-            Item forgeOutput = RSDynamicRecipeRegistry.getRecipeResult(RSRecipeCategory.FORGE_HEATING, inventory.getItem(0).getItem());
 
+            ItemStack forgeOutput;
+            ItemStack forgeInput = inventory.getItem(0);
+
+            RunicSmithingMaterial material = RunicSmithingMaterial.getAssociatedMaterial(forgeInput.getItem());
+
+            //If it's heating to an ingot, do that
+            if (material != null) {
+                forgeOutput = new ItemStack(ModItems.HOT_INGOT.get(), entity.itemHandler.getStackInSlot(1).getCount() + 1);
+                CompoundTag tag = new CompoundTag();
+                tag.putInt("CustomModelData", material.ordinal());
+                tag.putInt("runicsmithing.material", material.ordinal());
+                forgeOutput.setTag(tag);
+                forgeOutput.setHoverName(Component.literal(String.format("Hot %s Ingot", StringUtils.capitalize(material.getMaterialName())).strip()));
+            }
+            //Else, just turn it into a hot tool base
+            else
+            {
+                Item outputItem = RSDynamicRecipeRegistry.getRecipeResult(RSRecipeCategory.FORGE_HEATING, forgeInput.getItem());
+                forgeOutput = new ItemStack(outputItem, entity.itemHandler.getStackInSlot(1).getCount() + 1);
+                //Copy the tag
+                forgeOutput.setTag(forgeInput.getTag());
+            }
 
 
 
             entity.itemHandler.extractItem(0, 1, false);
-            entity.itemHandler.setStackInSlot(1, new ItemStack(forgeOutput, entity.itemHandler.getStackInSlot(1).getCount() + 1));
+            entity.itemHandler.setStackInSlot(1, forgeOutput);
         }
     }
     private static boolean hasRecipe(@NotNull ForgeBlockEntityParent entity, SimpleContainer inventory) {
@@ -111,14 +131,19 @@ public class ForgeBlockEntity extends ForgeBlockEntityParent implements MenuProv
         //New recipe code
         Item output = null;
         Item itemInFirstSlot = inventory.getItem(0).getItem();
-        if (RSDynamicRecipeRegistry.isItemAValidInput(itemInFirstSlot, RSRecipeCategory.FORGE_HEATING)) {
-            output = RSDynamicRecipeRegistry.getRecipeResult(RSRecipeCategory.FORGE_HEATING, itemInFirstSlot);
-            if (output instanceof SmithingChainItem) {
-                if (((SmithingChainItem) output).getMaterial().getPrimitive()) {hasValidMaterialInFirstSlot = true;}
+
+        RunicSmithingMaterial outputMaterial = RunicSmithingMaterial.getAssociatedMaterial(itemInFirstSlot);
+
+        if (outputMaterial != null) {
+            output = ModItems.HOT_INGOT.get();
+            if (outputMaterial.getPrimitive()) {
+                {hasValidMaterialInFirstSlot = true;}
             }
         }
-
-
+        else if (itemInFirstSlot instanceof ToolBase) {
+            output = RSDynamicRecipeRegistry.getRecipeResult(RSRecipeCategory.FORGE_HEATING, itemInFirstSlot);
+            hasValidMaterialInFirstSlot = true;
+        }
 
         return hasValidMaterialInFirstSlot && canInsertAmountIntoOutput(inventory) && canInsertItemIntoOutputSlot(inventory, output);
     }

@@ -2,7 +2,6 @@ package com.thathitmann.runicsmithing.item.custom;
 
 import com.thathitmann.runicsmithing.item.custom.supers.THRSItemBase;
 import com.thathitmann.runicsmithing.sound.ModSounds;
-import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;

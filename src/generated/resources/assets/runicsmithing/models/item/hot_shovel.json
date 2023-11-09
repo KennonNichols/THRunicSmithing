@@ -1,0 +1,38 @@
+{
+  "parent": "minecraft:item/generated",
+  "overrides": [
+    {
+      "model": "runicsmithing:item/hot_shovel/copper",
+      "predicate": {
+        "minecraft:custom_model_data": 1.0
+      }
+    },
+    {
+      "model": "runicsmithing:item/hot_shovel/iron",
+      "predicate": {
+        "minecraft:custom_model_data": 2.0
+      }
+    },
+    {
+      "model": "runicsmithing:item/hot_shovel/gold",
+      "predicate": {
+        "minecraft:custom_model_data": 3.0
+      }
+    },
+    {
+      "model": "runicsmithing:item/hot_shovel/diamond",
+      "predicate": {
+        "minecraft:custom_model_data": 4.0
+      }
+    },
+    {
+      "model": "runicsmithing:item/hot_shovel/netherite",
+      "predicate": {
+        "minecraft:custom_model_data": 5.0
+      }
+    }
+  ],
+  "textures": {
+    "layer0": "runicsmithing:item/base/hot_shovel"
+  }
+}

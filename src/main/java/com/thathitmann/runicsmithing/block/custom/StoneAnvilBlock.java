@@ -14,6 +14,7 @@ import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import org.jetbrains.annotations.NotNull;
 
 public class StoneAnvilBlock extends Block {
 
@@ -30,17 +31,7 @@ public class StoneAnvilBlock extends Block {
     private static final VoxelShape X_AXIS_AABB = Shapes.or(BASE, X_LEG1, X_LEG2, X_TOP);
     private static final VoxelShape Z_AXIS_AABB = Shapes.or(BASE, Z_LEG1, Z_LEG2, Z_TOP);
 
-    /*
-    private static final VoxelShape SHAPE = Block.box(0, 0, 0, 16, 16, 16);
-
-
-
-    @Override
-    public VoxelShape getShape(BlockState p_60555_, BlockGetter p_60556_, BlockPos p_60557_, CollisionContext p_60558_) {
-        return SHAPE;
-    }*/
-
-    public VoxelShape getShape(BlockState pState, BlockGetter pLevel, BlockPos pPos, CollisionContext pContext) {
+    public @NotNull VoxelShape getShape(BlockState pState, @NotNull BlockGetter pLevel, @NotNull BlockPos pPos, @NotNull CollisionContext pContext) {
         Direction direction = pState.getValue(FACING);
         return direction.getAxis() == Direction.Axis.X ? X_AXIS_AABB : Z_AXIS_AABB;
     }
@@ -63,7 +54,7 @@ public class StoneAnvilBlock extends Block {
     }
 
     @Override
-    public BlockState mirror(BlockState blockState, Mirror mirror) {
+    public @NotNull BlockState mirror(BlockState blockState, Mirror mirror) {
         return blockState.rotate(mirror.getRotation(blockState.getValue(FACING)));
     }
 

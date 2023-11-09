@@ -1,7 +1,6 @@
 package com.thathitmann.runicsmithing.screen;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.thathitmann.runicsmithing.RunicSmithing;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -21,12 +20,6 @@ public class ForgeBlockScreen extends AbstractContainerScreen<ForgeBlockMenu> {
     public ForgeBlockScreen(ForgeBlockMenu forgeBlockMenu, Inventory inventory, Component component) {
         super(forgeBlockMenu, inventory, component);
     }
-
-    @Override
-    protected void init() {
-        super.init();
-    }
-
 
 
     @Override

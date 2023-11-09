@@ -2,13 +2,15 @@ package com.thathitmann.runicsmithing.block.entity;
 
 import com.thathitmann.runicsmithing.generators.RSDynamicRecipeRegistry;
 import com.thathitmann.runicsmithing.generators.RSRecipeCategory;
+import com.thathitmann.runicsmithing.item.ModItems;
 import com.thathitmann.runicsmithing.item.custom.supers.Aspect;
-import com.thathitmann.runicsmithing.item.custom.supers.HotIngotBase;
-import com.thathitmann.runicsmithing.item.custom.supers.SmithingChainItem;
+import com.thathitmann.runicsmithing.item.custom.supers.RunicSmithingMaterial;
 //import com.thathitmann.runicsmithing.recipe.ForgeRecipe;
+import com.thathitmann.runicsmithing.item.custom.supers.smithing_chain.ToolBase;
 import com.thathitmann.runicsmithing.screen.CoreForgeBlockMenu;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
@@ -18,11 +20,11 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import static com.thathitmann.runicsmithing.block.custom.CoreForgeBlock.DEPTH;
-import static com.thathitmann.runicsmithing.block.custom.ForgeBlock.LIT;
 
 public class CoreForgeBlockEntity extends ForgeBlockEntityParent implements MenuProvider {
 
@@ -58,9 +60,6 @@ public class CoreForgeBlockEntity extends ForgeBlockEntityParent implements Menu
                 entity.heatPercentage++;
             }
 
-            //if (entity.burnTime <= 0) {
-            //    setToUnlit(level, blockPos, blockState);
-            //}
         }
         //Cool down otherwise
         else {
@@ -93,73 +92,103 @@ public class CoreForgeBlockEntity extends ForgeBlockEntityParent implements Menu
 
     }
 
-    private static Aspect getDepthAspect(BlockState state) {
+    private static CompoundTag getDepthAspect(BlockState state) {
         int depth = state.getValue(DEPTH);
+        Aspect depthAspect;
 
         if (depth > 500) {
-            return new Aspect("Coreforged at " + -depth + " for +15 quality.", 15);
+            depthAspect = new Aspect("Coreforged at " + -depth + " for +15 quality.", 15);
         } else if (depth > 450) {
-            return new Aspect("Hellforged at " + -depth + " for +10 quality.", 10);
+            depthAspect = new Aspect("Hellforged at " + -depth + " for +10 quality.", 10);
         } else if (depth > 400) {
-            return new Aspect("Netherforged at " + -depth + " for +9 quality.", 9);
+            depthAspect = new Aspect("Netherforged at " + -depth + " for +9 quality.", 9);
         } else if (depth > 350) {
-            return new Aspect("Stygianforged at " + -depth + " for +8 quality.", 8);
+            depthAspect = new Aspect("Stygianforged at " + -depth + " for +8 quality.", 8);
         } else if (depth > 300) {
-            return new Aspect("Ultradeepforged at " + -depth + " for +7 quality.", 7);
+            depthAspect = new Aspect("Ultradeepforged at " + -depth + " for +7 quality.", 7);
         } else if (depth > 250) {
-            return new Aspect("Deepforged at " + -depth + " for +6 quality.", 6);
+            depthAspect = new Aspect("Deepforged at " + -depth + " for +6 quality.", 6);
         } else if (depth > 200) {
-            return new Aspect("Dwarvforged at " + -depth + " for +5 quality.", 5);
+            depthAspect = new Aspect("Dwarvforged at " + -depth + " for +5 quality.", 5);
         } else if (depth > 150) {
-            return new Aspect("Extreme pressure forged at " + -depth + " for +4 quality.", 4);
+            depthAspect = new Aspect("Extreme pressure forged at " + -depth + " for +4 quality.", 4);
         } else if (depth > 100) {
-            return new Aspect("Pressure forged at " + -depth + " for +3 quality.", 3);
+            depthAspect = new Aspect("Pressure forged at " + -depth + " for +3 quality.", 3);
         } else if (depth > 50) {
-            return new Aspect("Low-pressure forged at " + -depth + " for +2 quality.", 2);
+            depthAspect = new Aspect("Low-pressure forged at " + -depth + " for +2 quality.", 2);
         } else if (depth > 0) {
-            return new Aspect("Depth forged at " + -depth + " for +1 quality.", 1);
+            depthAspect = new Aspect("Depth forged at " + -depth + " for +1 quality.", 1);
         } else {
-            return new Aspect("Normally forged for no quality bonus.", 10);
+            depthAspect = new Aspect("Normally forged for no quality bonus.", 0);
         }
+
+
+        CompoundTag tag = new CompoundTag();
+        tag.putString("name", depthAspect.name());
+        tag.putInt("quality", depthAspect.qualityLevel());
+        return tag;
     }
 
     private static void craftItem(ForgeBlockEntityParent entity, SimpleContainer inventory) {
         if (hasRecipe(entity, inventory)) {
 
-            //New dynamic recipe
-            Item forgeOutput = RSDynamicRecipeRegistry.getRecipeResult(RSRecipeCategory.FORGE_HEATING, inventory.getItem(0).getItem());
+            ItemStack forgeOutput;
+            ItemStack forgeInput = inventory.getItem(0);
+
+            RunicSmithingMaterial material = RunicSmithingMaterial.getAssociatedMaterial(forgeInput.getItem());
+
+            //If it's heating to an ingot, do that
+            if (material != null) {
+                forgeOutput = new ItemStack(ModItems.HOT_INGOT.get(), entity.itemHandler.getStackInSlot(1).getCount() + 1);
+                CompoundTag tag = new CompoundTag();
+                tag.putInt("CustomModelData", material.ordinal());
+                tag.putInt("runicsmithing.material", material.ordinal());
 
 
-            //Switch the item and add NBT tags
-            ItemStack inputItemStack = entity.itemHandler.getStackInSlot(0);
+                //Add depth aspect
+                CompoundTag aspectTag = getDepthAspect(entity.getBlockState());
+                tag.put("runicsmithing.aspect", aspectTag);
+
+
+
+
+                forgeOutput.setTag(tag);
+                forgeOutput.setHoverName(Component.literal(String.format("Hot %s Ingot", StringUtils.capitalize(material.getMaterialName()))));
+            }
+            //Else, just turn it into a hot tool base
+            else
+            {
+                Item outputItem = RSDynamicRecipeRegistry.getRecipeResult(RSRecipeCategory.FORGE_HEATING, forgeInput.getItem());
+                forgeOutput = new ItemStack(outputItem, entity.itemHandler.getStackInSlot(1).getCount() + 1);
+                //Copy the tag
+                forgeOutput.setTag(forgeInput.getTag());
+            }
+
+
+
+
             entity.itemHandler.extractItem(0, 1, false);
-            ItemStack outputItemStack = new ItemStack(forgeOutput, entity.itemHandler.getStackInSlot(1).getCount() + 1);
-
-
-
-            if (forgeOutput instanceof HotIngotBase && outputItemStack.getTag() != null) {
-                CompoundTag tag = SmithingChainItem.addNBTAspectTag(outputItemStack.getTag(), getDepthAspect(entity.getBlockState()).getQualityLevel(), getDepthAspect(entity.getBlockState()).getName());
-                outputItemStack.setTag(tag);
-            }
-            else if (forgeOutput instanceof SmithingChainItem) {
-                outputItemStack.setTag(inputItemStack.getTag());
-            }
-
-            entity.itemHandler.setStackInSlot(1, outputItemStack);
+            entity.itemHandler.setStackInSlot(1, forgeOutput);
 
         }
     }
     private static boolean hasRecipe(@NotNull ForgeBlockEntityParent ignoredEntity, SimpleContainer inventory) {
 
-        //If not valid, return false immediately
-        if (!RSDynamicRecipeRegistry.isItemAValidInput(inventory.getItem(0).getItem(), RSRecipeCategory.FORGE_HEATING)) {
-            return false;
+        Item output = null;
+        Item itemInFirstSlot = inventory.getItem(0).getItem();
+        RunicSmithingMaterial outputMaterial = RunicSmithingMaterial.getAssociatedMaterial(itemInFirstSlot);
+        boolean hasValidMaterialInFirstSlot = false;
+        if (outputMaterial != null) {
+            output = ModItems.HOT_INGOT.get();
+            hasValidMaterialInFirstSlot = true;
+        }
+        if (itemInFirstSlot instanceof ToolBase) {
+            output = RSDynamicRecipeRegistry.getRecipeResult(RSRecipeCategory.FORGE_HEATING, itemInFirstSlot);
+            hasValidMaterialInFirstSlot = true;
         }
 
-        Item output = RSDynamicRecipeRegistry.getRecipeResult(RSRecipeCategory.FORGE_HEATING, inventory.getItem(0).getItem());
 
-
-        return canInsertAmountIntoOutput(inventory) && canInsertItemIntoOutputSlot(inventory, output);
+        return hasValidMaterialInFirstSlot && canInsertAmountIntoOutput(inventory) && canInsertItemIntoOutputSlot(inventory, output);
     }
     private static boolean canInsertItemIntoOutputSlot(@NotNull SimpleContainer inventory, Item stack) {
         return inventory.getItem(1).isEmpty() || inventory.getItem(1).getItem() == stack;

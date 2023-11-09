@@ -1,7 +1,7 @@
 package com.thathitmann.runicsmithing.generators;
 
+import com.thathitmann.runicsmithing.item.custom.supers.GeneratableItem;
 import net.minecraft.world.item.Item;
-import net.minecraftforge.registries.RegistryObject;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -10,8 +10,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GeneratedItemRegistry {
-    public static List<RegistryObject<Item>> itemsToAddToCreativeModeTabBecauseOfThisNonsense = new ArrayList<>();
-    public static List<String> itemsToAddToLangFile = new ArrayList<>();
+
+
+
+
+    public static final List<GeneratableItem> generatedItems = new ArrayList<>();
+
+    public static GeneratableItem getGeneratableItem(Item item) {
+        for (GeneratableItem generatableItem : generatedItems) {
+            if (generatableItem.item().get() == item) {
+                return generatableItem;
+            }
+        }
+        return null;
+    }
+
+
+    public static final List<String> itemsToAddToLangFile = new ArrayList<>();
 
     public static void createTranslationFile() {
         StringBuilder jsonText = new StringBuilder("{");

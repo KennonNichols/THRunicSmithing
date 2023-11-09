@@ -1,6 +1,7 @@
 package com.thathitmann.runicsmithing.item.custom.supers;
 
 import com.thathitmann.runicsmithing.block.ModBlocks;
+import com.thathitmann.runicsmithing.item.custom.supers.smithing_chain.HotIngotBase;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;

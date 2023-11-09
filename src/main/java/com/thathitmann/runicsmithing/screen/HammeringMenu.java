@@ -1,13 +1,13 @@
 package com.thathitmann.runicsmithing.screen;
 
+import com.thathitmann.runicsmithing.generators.GeneratedItemRegistry;
 import com.thathitmann.runicsmithing.generators.RSDynamicRecipeRegistry;
 import com.thathitmann.runicsmithing.generators.RSRecipeCategory;
-import com.thathitmann.runicsmithing.item.custom.supers.Aspect;
-import com.thathitmann.runicsmithing.item.custom.supers.ForgeHammer;
-import com.thathitmann.runicsmithing.item.custom.supers.ForgeLevel;
-import com.thathitmann.runicsmithing.item.custom.supers.SmithingChainItem;
+import com.thathitmann.runicsmithing.item.custom.supers.*;
+import com.thathitmann.runicsmithing.item.custom.supers.smithing_chain.SmithingChainItem;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.player.Inventory;
@@ -16,6 +16,7 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -66,6 +67,14 @@ public class HammeringMenu extends AbstractContainerMenu {
     public Boolean tryReduceButtonState(int index) {
         if (this.states.get(index) > 0) {
             this.states.set(index, this.states.get(index) - 1);
+            if (entity.isAdvancedMode()) {
+                //Random pitch between .8 and 1.2f
+                float pitch = player.getRandom().nextFloat() * .4f + .8f;
+                player.playNotifySound(SoundEvents.ANVIL_PLACE, SoundSource.PLAYERS, 0.2f, pitch);
+            }
+
+
+            //player.level().playSeededSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ANVIL_USE, SoundSource.PLAYERS, 1.0f, 0.5f, 1);
         }
         return this.states.get(index) <= 0;
     }
@@ -97,22 +106,24 @@ public class HammeringMenu extends AbstractContainerMenu {
     public void attemptToCraft() {
         ItemStack inputStack = player.getMainHandItem();
         if (hasListChanged() && inputStack.getItem() instanceof SmithingChainItem) {
+            ItemStack outputItemStack;
             Item result = RSDynamicRecipeRegistry.getRecipeResult(RSRecipeCategory.SHAPED_HAMMERING, inputStack.getItem(), getListAsForgeLevels());
             if (result != inputStack.getItem()) {
-                ItemStack outputItemStack = new ItemStack(result, player.getMainHandItem().getCount());
+                outputItemStack = new ItemStack(result, player.getMainHandItem().getCount());
                 CompoundTag tag = inputStack.getTag();
-                if (entity.isAdvancedMode() && tag != null) {
-                    tag = SmithingChainItem.addNBTAspectTag(tag, new Aspect("Forged with iron tools for +3 quality.", 3));
+                if (entity.isAdvancedMode()) {
+                    SmithingChainItem.addToNBTAspectTag(tag, new Aspect("Forged with iron tools for +3 quality.", 3));
                 }
                 outputItemStack.setTag(tag);
-                //player.level().playSeededSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ANVIL_USE, SoundSource.PLAYERS, 1f,1f,0);
-                player.getInventory().setItem(player.getInventory().selected, outputItemStack);
+                outputItemStack.setHoverName(Component.literal(String.format(GeneratedItemRegistry.getGeneratableItem(result).formatableName(), StringUtils.capitalize(RunicSmithingMaterial.values()[tag.getInt("runicsmithing.material")].getMaterialName()))));
+                player.playNotifySound(SoundEvents.ANVIL_USE, SoundSource.PLAYERS, 1f,1f);
             }
             else {
                 //Destroy invalid recipes
-                //player.level().playSeededSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ITEM_BREAK, SoundSource.PLAYERS, 1f,1f,0);
-                player.getInventory().setItem(player.getInventory().selected, new ItemStack(Items.AIR));
+                player.playNotifySound (SoundEvents.ITEM_BREAK, SoundSource.PLAYERS, 1f,1f);
+                outputItemStack = new ItemStack(Items.AIR);
             }
+            entity.queueReplacement(outputItemStack, player.getId());
         }
     }
 }

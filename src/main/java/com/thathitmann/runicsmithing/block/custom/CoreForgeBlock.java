@@ -4,7 +4,6 @@ import com.thathitmann.runicsmithing.block.entity.CoreForgeBlockEntity;
 import com.thathitmann.runicsmithing.block.entity.ModBlockEntities;
 import com.thathitmann.runicsmithing.item.ModItems;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -27,6 +26,7 @@ import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraftforge.network.NetworkHooks;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class CoreForgeBlock extends BaseEntityBlock {
@@ -75,7 +75,7 @@ public class CoreForgeBlock extends BaseEntityBlock {
     }
 
     @Override
-    public BlockState mirror(BlockState blockState, Mirror mirror) {
+    public @NotNull BlockState mirror(BlockState blockState, Mirror mirror) {
         return blockState.rotate(mirror.getRotation(blockState.getValue(FACING)));
     }
 
@@ -85,13 +85,13 @@ public class CoreForgeBlock extends BaseEntityBlock {
 
 
     @Override
-    public RenderShape getRenderShape(BlockState p_49232_) {
+    public @NotNull RenderShape getRenderShape(@NotNull BlockState p_49232_) {
         return RenderShape.MODEL;
     }
 
 
     @Override
-    public void onRemove(BlockState blockState, Level level, BlockPos blockPos, BlockState newState, boolean playerIsMoving) {
+    public void onRemove(BlockState blockState, @NotNull Level level, @NotNull BlockPos blockPos, BlockState newState, boolean playerIsMoving) {
 
         if (blockState.getBlock() != newState.getBlock()) {
             BlockEntity blockEntity = level.getBlockEntity(blockPos);
@@ -106,7 +106,7 @@ public class CoreForgeBlock extends BaseEntityBlock {
 
 
     @Override
-    public InteractionResult use(BlockState state, Level level, BlockPos blockPos, Player player, InteractionHand interactionHand, BlockHitResult p_60508_) {
+    public @NotNull InteractionResult use(@NotNull BlockState state, Level level, @NotNull BlockPos blockPos, @NotNull Player player, @NotNull InteractionHand interactionHand, @NotNull BlockHitResult p_60508_) {
         if (!level.isClientSide() && interactionHand == InteractionHand.MAIN_HAND) {
 
 
@@ -158,14 +158,14 @@ public class CoreForgeBlock extends BaseEntityBlock {
 
     @Nullable
     @Override
-    public BlockEntity newBlockEntity(BlockPos blockPos, BlockState blockState) {
+    public BlockEntity newBlockEntity(@NotNull BlockPos blockPos, @NotNull BlockState blockState) {
         return new CoreForgeBlockEntity(blockPos, blockState);
     }
 
 
     @Nullable
     @Override
-    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState blockState, BlockEntityType<T> tBlockEntityType) {
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(@NotNull Level level, @NotNull BlockState blockState, @NotNull BlockEntityType<T> tBlockEntityType) {
         return createTickerHelper(tBlockEntityType, ModBlockEntities.CORE_FORGE_BLOCK.get(),
                 CoreForgeBlockEntity::tick);
     }
