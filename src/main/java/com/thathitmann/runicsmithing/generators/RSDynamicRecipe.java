@@ -5,5 +5,5 @@ import net.minecraft.world.item.Item;
 
 import java.util.List;
 
-public record RSDynamicRecipe(Item input, Item output, RSRecipeCategory category, List<ForgeLevel> specialArgs) {
+public record RSDynamicRecipe(Item input, Item output, RSRecipeCategory category, ForgeLevel[][] specialArgs) {
 }

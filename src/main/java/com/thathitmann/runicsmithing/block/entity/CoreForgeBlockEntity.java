@@ -3,10 +3,11 @@ package com.thathitmann.runicsmithing.block.entity;
 import com.thathitmann.runicsmithing.generators.RSDynamicRecipeRegistry;
 import com.thathitmann.runicsmithing.generators.RSRecipeCategory;
 import com.thathitmann.runicsmithing.item.ModItems;
-import com.thathitmann.runicsmithing.item.custom.supers.Aspect;
 import com.thathitmann.runicsmithing.item.custom.supers.RunicSmithingMaterial;
 //import com.thathitmann.runicsmithing.recipe.ForgeRecipe;
 import com.thathitmann.runicsmithing.item.custom.supers.smithing_chain.ToolBase;
+import com.thathitmann.runicsmithing.item.custom.supers.smithing_chain.toolModifiers.AspectModifier;
+import com.thathitmann.runicsmithing.item.custom.supers.smithing_chain.toolModifiers.ToolModifierStack;
 import com.thathitmann.runicsmithing.screen.CoreForgeBlockMenu;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -92,41 +93,35 @@ public class CoreForgeBlockEntity extends ForgeBlockEntityParent implements Menu
 
     }
 
-    private static CompoundTag getDepthAspect(BlockState state) {
+    private static AspectModifier getDepthAspect(BlockState state) {
         int depth = state.getValue(DEPTH);
-        Aspect depthAspect;
+        AspectModifier depthAspect;
 
         if (depth > 500) {
-            depthAspect = new Aspect("Coreforged at " + -depth + " for +15 quality.", 15);
+            return new AspectModifier("Coreforged at " + -depth + " for +15 quality.", 15);
         } else if (depth > 450) {
-            depthAspect = new Aspect("Hellforged at " + -depth + " for +10 quality.", 10);
+            return new AspectModifier("Hellforged at " + -depth + " for +10 quality.", 10);
         } else if (depth > 400) {
-            depthAspect = new Aspect("Netherforged at " + -depth + " for +9 quality.", 9);
+            return new  AspectModifier("Netherforged at " + -depth + " for +9 quality.", 9);
         } else if (depth > 350) {
-            depthAspect = new Aspect("Stygianforged at " + -depth + " for +8 quality.", 8);
+            return new  AspectModifier("Stygianforged at " + -depth + " for +8 quality.", 8);
         } else if (depth > 300) {
-            depthAspect = new Aspect("Ultradeepforged at " + -depth + " for +7 quality.", 7);
+            return new AspectModifier("Ultradeepforged at " + -depth + " for +7 quality.", 7);
         } else if (depth > 250) {
-            depthAspect = new Aspect("Deepforged at " + -depth + " for +6 quality.", 6);
+            return new AspectModifier("Deepforged at " + -depth + " for +6 quality.", 6);
         } else if (depth > 200) {
-            depthAspect = new Aspect("Dwarvforged at " + -depth + " for +5 quality.", 5);
+            return new AspectModifier("Dwarvforged at " + -depth + " for +5 quality.", 5);
         } else if (depth > 150) {
-            depthAspect = new Aspect("Extreme pressure forged at " + -depth + " for +4 quality.", 4);
+            return new AspectModifier("Extreme pressure forged at " + -depth + " for +4 quality.", 4);
         } else if (depth > 100) {
-            depthAspect = new Aspect("Pressure forged at " + -depth + " for +3 quality.", 3);
+            return new AspectModifier("Pressure forged at " + -depth + " for +3 quality.", 3);
         } else if (depth > 50) {
-            depthAspect = new Aspect("Low-pressure forged at " + -depth + " for +2 quality.", 2);
+            return new  AspectModifier("Low-pressure forged at " + -depth + " for +2 quality.", 2);
         } else if (depth > 0) {
-            depthAspect = new Aspect("Depth forged at " + -depth + " for +1 quality.", 1);
+            return new AspectModifier("Depth forged at " + -depth + " for +1 quality.", 1);
         } else {
-            depthAspect = new Aspect("Normally forged for no quality bonus.", 0);
+            return new AspectModifier("Normally forged for no quality bonus.", 0);
         }
-
-
-        CompoundTag tag = new CompoundTag();
-        tag.putString("name", depthAspect.name());
-        tag.putInt("quality", depthAspect.qualityLevel());
-        return tag;
     }
 
     private static void craftItem(ForgeBlockEntityParent entity, SimpleContainer inventory) {
@@ -142,13 +137,14 @@ public class CoreForgeBlockEntity extends ForgeBlockEntityParent implements Menu
                 forgeOutput = new ItemStack(ModItems.HOT_INGOT.get(), entity.itemHandler.getStackInSlot(1).getCount() + 1);
                 CompoundTag tag = new CompoundTag();
                 tag.putInt("CustomModelData", material.ordinal());
-                tag.putInt("runicsmithing.material", material.ordinal());
+                //Tag it with material
+                CompoundTag quickgrabTag = new CompoundTag();
+                quickgrabTag.putInt(ToolModifierStack.QUICKGRAB_MATERIAL_TAG_ID, material.ordinal());
+                tag.put(ToolModifierStack.QUICKGRAB_TAG_ID, quickgrabTag);
 
 
                 //Add depth aspect
-                CompoundTag aspectTag = getDepthAspect(entity.getBlockState());
-                tag.put("runicsmithing.aspect", aspectTag);
-
+                ToolModifierStack.addToolModifierAndTransferNBT(tag, tag, getDepthAspect(entity.getBlockState()));
 
 
 

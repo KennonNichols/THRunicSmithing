@@ -5,6 +5,8 @@ import com.thathitmann.runicsmithing.generators.RSDynamicRecipeRegistry;
 import com.thathitmann.runicsmithing.generators.RSRecipeCategory;
 import com.thathitmann.runicsmithing.item.custom.supers.*;
 import com.thathitmann.runicsmithing.item.custom.supers.smithing_chain.SmithingChainItem;
+import com.thathitmann.runicsmithing.item.custom.supers.smithing_chain.toolModifiers.AspectModifier;
+import com.thathitmann.runicsmithing.item.custom.supers.smithing_chain.toolModifiers.ToolModifierStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
@@ -112,10 +114,10 @@ public class HammeringMenu extends AbstractContainerMenu {
                 outputItemStack = new ItemStack(result, player.getMainHandItem().getCount());
                 CompoundTag tag = inputStack.getTag();
                 if (entity.isAdvancedMode()) {
-                    SmithingChainItem.addToNBTAspectTag(tag, new Aspect("Forged with iron tools for +3 quality.", 3));
+                    ToolModifierStack.addToolModifierAndTransferNBT(tag, tag, new AspectModifier("Forged with iron tools for +3 quality.", 3));
                 }
                 outputItemStack.setTag(tag);
-                outputItemStack.setHoverName(Component.literal(String.format(GeneratedItemRegistry.getGeneratableItem(result).formatableName(), StringUtils.capitalize(RunicSmithingMaterial.values()[tag.getInt("runicsmithing.material")].getMaterialName()))));
+                outputItemStack.setHoverName(Component.literal(String.format(GeneratedItemRegistry.getGeneratableItem(result).formatableName(), StringUtils.capitalize(RunicSmithingMaterial.values()[tag.getCompound(ToolModifierStack.QUICKGRAB_TAG_ID).getInt(ToolModifierStack.QUICKGRAB_MATERIAL_TAG_ID)].getMaterialName()))));
                 player.playNotifySound(SoundEvents.ANVIL_USE, SoundSource.PLAYERS, 1f,1f);
             }
             else {

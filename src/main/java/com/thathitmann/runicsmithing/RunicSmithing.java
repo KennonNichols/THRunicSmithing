@@ -10,6 +10,7 @@ import com.thathitmann.runicsmithing.item.ModItems;
 import com.thathitmann.runicsmithing.generators.GeneratedItemRegistry;
 import com.thathitmann.runicsmithing.item.custom.supers.GeneratableItem;
 import com.thathitmann.runicsmithing.item.custom.supers.RunicSmithingMaterial;
+import com.thathitmann.runicsmithing.item.custom.supers.smithing_chain.toolModifiers.ToolModifierStack;
 import com.thathitmann.runicsmithing.screen.CoreForgeBlockScreen;
 import com.thathitmann.runicsmithing.screen.ForgeBlockScreen;
 import com.thathitmann.runicsmithing.screen.HammeringScreen;
@@ -97,7 +98,12 @@ public class RunicSmithing
                     CompoundTag tag = new CompoundTag();
                     ItemStack newItemStack = new ItemStack(item.item().get(), 1);
                     tag.putInt("CustomModelData", material.ordinal());
-                    tag.putInt("runicsmithing.material", material.ordinal());
+
+                    //Marking material
+                    CompoundTag materialTag = new CompoundTag();
+                    materialTag.putInt(ToolModifierStack.QUICKGRAB_MATERIAL_TAG_ID, material.ordinal());
+                    tag.put(ToolModifierStack.QUICKGRAB_TAG_ID, materialTag);
+
                     newItemStack.setTag(tag);
                     newItemStack.setHoverName(Component.literal(String.format(item.formatableName(), StringUtils.capitalize(material.getMaterialName()))));
                     event.accept(newItemStack);

@@ -1,6 +1,7 @@
 package com.thathitmann.runicsmithing.item.custom.supers.smithing_chain.forged_tool;
 
 import com.thathitmann.runicsmithing.item.custom.supers.RunicSmithingMaterial;
+import com.thathitmann.runicsmithing.item.custom.supers.smithing_chain.toolModifiers.ToolModifierStack;
 import net.minecraft.world.item.ItemStack;
 
 public interface ForgedTool {
@@ -13,7 +14,7 @@ public interface ForgedTool {
     }
 
     default int getQualityFromItemstack(ItemStack itemStack) {
-        return itemStack.getTag().getCompound("runicsmithing.aspect").getInt("quality");
+        return itemStack.getTag().getCompound(ToolModifierStack.QUICKGRAB_TAG_ID).getInt(ToolModifierStack.QUICKGRAB_QUALITY_TAG_ID);
     }
 
     default float getSpeedFromItemStack(ItemStack itemStack) {
@@ -21,7 +22,7 @@ public interface ForgedTool {
     }
 
     default RunicSmithingMaterial getMaterialFromItemStack(ItemStack itemStack) {
-        int materialKey = itemStack.getTag().getInt("runicsmithing.material");
+        int materialKey = itemStack.getTag().getCompound(ToolModifierStack.QUICKGRAB_TAG_ID).getInt(ToolModifierStack.QUICKGRAB_MATERIAL_TAG_ID);
         return RunicSmithingMaterial.values()[materialKey];
     }
 

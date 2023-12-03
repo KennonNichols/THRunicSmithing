@@ -5,10 +5,11 @@ import com.thathitmann.runicsmithing.block.custom.WoodenBasinBlock;
 import com.thathitmann.runicsmithing.generators.GeneratedItemRegistry;
 import com.thathitmann.runicsmithing.generators.RSDynamicRecipeRegistry;
 import com.thathitmann.runicsmithing.generators.RSRecipeCategory;
-import com.thathitmann.runicsmithing.item.custom.supers.Aspect;
 import com.thathitmann.runicsmithing.item.custom.supers.RunicSmithingMaterial;
 import com.thathitmann.runicsmithing.item.custom.supers.THRSItemBase;
 import com.thathitmann.runicsmithing.item.custom.supers.smithing_chain.forged_tool.ForgedTool;
+import com.thathitmann.runicsmithing.item.custom.supers.smithing_chain.toolModifiers.AspectModifier;
+import com.thathitmann.runicsmithing.item.custom.supers.smithing_chain.toolModifiers.ToolModifierStack;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
@@ -37,8 +38,8 @@ public class SmithingChainItem extends THRSItemBase {
 
     protected String tooltip = "";
 
-    private static Aspect quenchAspect(int temperCount) {
-        return new Aspect(
+    private static AspectModifier quenchAspect(int temperCount) {
+        return new AspectModifier(
                 String.format("Quenched %s %s for +1 quality.",
                         temperCount,
                         //If the count is greater than one, do "times"
@@ -46,8 +47,8 @@ public class SmithingChainItem extends THRSItemBase {
                 1
         );
     }
-    private static Aspect temperAspect(int temperCount) {
-        return new Aspect(
+    private static AspectModifier temperAspect(int temperCount) {
+        return new AspectModifier(
                 String.format("Tempered %s %s for +2 quality.",
                         temperCount,
                         //If the count is greater than one, do "times"
@@ -67,31 +68,6 @@ public class SmithingChainItem extends THRSItemBase {
         tag.putInt("runicsmithing.temper_count", tag.getInt("runicsmithing.temper_count") + 1);
         return tag;
     }
-    public static void addToNBTAspectTag(@Nullable CompoundTag tag, @NotNull Aspect aspect) {
-        addToNBTAspectTag(tag, aspect.qualityLevel(), aspect.name());
-    }
-
-    public static void addToNBTAspectTag(@Nullable CompoundTag tag, @Nullable Integer quality, @Nullable String description) {
-        if (tag == null) {
-            tag = new CompoundTag();
-        }
-        CompoundTag aspectTag = tag.getCompound("runicsmithing.aspect");
-        int currentQuality = aspectTag.getInt("quality");
-        String currentName = aspectTag.getString("name");
-
-
-        if (quality != null) {
-            aspectTag.putInt("quality", currentQuality + quality);
-        }
-        if (description != null) {
-            aspectTag.putString("name", currentName + description + "\n\n");
-        }
-
-
-        tag.put("runicsmithing.aspect", aspectTag);
-    }
-
-
 
 
     public Item getCoolingResult() {
@@ -112,10 +88,8 @@ public class SmithingChainItem extends THRSItemBase {
 
 
             components.add(Component.literal(tooltip).withStyle(ChatFormatting.DARK_PURPLE));
-            CompoundTag aspect = itemStack.getTag().getCompound("runicsmithing.aspect");
-            String outputString = "Forged item has the following modifiers:\n\n" + aspect.getString("name");
+            String outputString = ToolModifierStack.buildFromTag(itemStack.getTag().getCompound(ToolModifierStack.TOOL_MODIFIER_STACK_TAG_ID)).getWritableList();
             components.add(Component.literal(outputString).withStyle(ChatFormatting.LIGHT_PURPLE));
-            components.add(Component.literal("Current quality bonus: " + aspect.getInt("quality")).withStyle(ChatFormatting.LIGHT_PURPLE));
         } else {
             components.add(Component.literal("Press SHIFT for more info").withStyle(ChatFormatting.AQUA));
         }
@@ -180,10 +154,12 @@ public class SmithingChainItem extends THRSItemBase {
 
                 //Transfer the tag, but get rid of the aspect name
                 CompoundTag tag = inputItemStack.getTag();
-                tag.getCompound("runicsmithing.aspect").putString("name", "Forged tool.");
-                outputItemStack.setTag(tag);
+
+                //Move all nbt data
+                outputItemStack.setTag(inputItemStack.getTag());
+                ToolModifierStack.loadQuickGrab(outputItemStack);
                 //Set name
-                outputItemStack.setHoverName(Component.literal(String.format(GeneratedItemRegistry.getGeneratableItem(outputItemStack.getItem()).formatableName(), StringUtils.capitalize(RunicSmithingMaterial.values()[tag.getInt("runicsmithing.material")].getMaterialName()))));
+                outputItemStack.setHoverName(Component.literal(String.format(GeneratedItemRegistry.getGeneratableItem(outputItemStack.getItem()).formatableName(), StringUtils.capitalize(RunicSmithingMaterial.values()[tag.getCompound(ToolModifierStack.QUICKGRAB_TAG_ID).getInt(ToolModifierStack.QUICKGRAB_MATERIAL_TAG_ID)].getMaterialName()))));
                 //Load attributes
                 ((ForgedTool)outputItem).reloadItemDamageStats(outputItemStack);
 
@@ -205,7 +181,7 @@ public class SmithingChainItem extends THRSItemBase {
             //If it's a smithing chain item, transfer tags, and rename
             if (inputItemStack.getItem() instanceof SmithingChainItem) {
                 outputItemStack.setTag(inputItemStack.getTag());
-                outputItemStack.setHoverName(Component.literal(String.format(GeneratedItemRegistry.getGeneratableItem(coolingResult).formatableName(), StringUtils.capitalize(RunicSmithingMaterial.values()[inputItemStack.getTag().getInt("runicsmithing.material")].getMaterialName()))));
+                outputItemStack.setHoverName(Component.literal(String.format(GeneratedItemRegistry.getGeneratableItem(coolingResult).formatableName(), StringUtils.capitalize(RunicSmithingMaterial.values()[inputItemStack.getTag().getCompound(ToolModifierStack.QUICKGRAB_TAG_ID).getInt(ToolModifierStack.QUICKGRAB_MATERIAL_TAG_ID)].getMaterialName()))));
             }
 
             //If it's a hot tool, and has less than 3 tempers, temper
@@ -214,7 +190,7 @@ public class SmithingChainItem extends THRSItemBase {
 
             if (inputItemStack.getItem() instanceof HotToolBase && temperCount < 3) {
 
-                Aspect quenchAspect;
+                AspectModifier quenchAspect;
 
                 if (useTemperAspect) {
                     quenchAspect = temperAspect(temperCount + 1);
@@ -226,7 +202,10 @@ public class SmithingChainItem extends THRSItemBase {
 
 
                 CompoundTag tag = SmithingChainItem.incrementTemperCount(outputItemStack.getTag());
-                SmithingChainItem.addToNBTAspectTag(tag, quenchAspect);
+
+                //Track ToolModifierStack
+                ToolModifierStack.addToolModifierAndTransferNBT(inputItemStack.getTag(), tag, quenchAspect);
+
                 outputItemStack.setTag(tag);
             }
 

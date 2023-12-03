@@ -33,7 +33,6 @@ public class ForgedAxe extends AxeItem implements ForgedTool {
 
     @Override
     public void appendHoverText(@NotNull ItemStack itemStack, @Nullable Level level, @NotNull List<Component> components, @NotNull TooltipFlag flag) {
-        itemStack.getTag().getCompound("runicsmithing.aspect");
         if (Screen.hasShiftDown()) {
             String outputString = "Quality: " + getQualityFromItemstack(itemStack);
             components.add(Component.literal(outputString).withStyle(ChatFormatting.LIGHT_PURPLE));

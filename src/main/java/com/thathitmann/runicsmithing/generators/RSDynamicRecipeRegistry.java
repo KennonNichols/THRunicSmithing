@@ -14,26 +14,87 @@ public final class RSDynamicRecipeRegistry {
     private static final ForgeLevel p = ForgeLevel.PRESENT;
     private static final ForgeLevel g = ForgeLevel.GONE;
 
-    public static final ForgeLevel[] PICKAXE_SHAPE = {
+    public static final ForgeLevel[][] PICKAXE_SHAPES = {
+            {
             p, p, p,
             g, p, g,
-            g, p, g};
-    public static final ForgeLevel[] SWORD_SHAPE = {
+            g, p, g}};
+    public static final ForgeLevel[][] SWORD_SHAPES = {
+            {
+                p, g, g,
+                p, g, g,
+                g, g, g
+            }, {
+                g, p, g,
+                g, p, g,
+                g, g, g
+            }, {
+                g, g, p,
+                g, g, p,
+                g, g, g
+            }, {
+                g, g, g,
+                p, g, g,
+                p, g, g
+            }, {
+                g, g, g,
+                g, p, g,
+                g, p, g
+            }, {
+                g, g, g,
+                g, g, p,
+                g, g, p
+        }};
+    public static final ForgeLevel[][] SHOVEL_SHAPES = {
+            {
+            p, g, g,
+            p, g, g,
+            p, g, g
+            },{
             g, p, g,
             g, p, g,
-            g, g, g};
-    public static final ForgeLevel[] SHOVEL_SHAPE = {
-            g, p, g,
-            g, p, g,
-            g, p, g};
-    public static final ForgeLevel[] AXE_SHAPE = {
-            g, p, p,
-            g, p, p,
-            g, p, g};
-    public static final ForgeLevel[] HOE_SHAPE = {
-            g, p, p,
-            g, p, g,
-            g, p, g};
+            g, p, g
+            },{
+            g, g, p,
+            g, g, p,
+            g, g, p
+            }};
+    public static final ForgeLevel[][] AXE_SHAPES = {
+            {
+                g, p, p,
+                g, p, p,
+                g, p, g
+            },{
+                p, p, g,
+                p, p, g,
+                p, g, g
+            },{
+                p, p, g,
+                p, p, g,
+                g, p, g
+            },{
+                g, p, p,
+                g, p, p,
+                g, g, p
+            }};
+    public static final ForgeLevel[][] HOE_SHAPES = {
+            {
+                    g, p, p,
+                    g, p, g,
+                    g, p, g
+            },{
+                    p, p, g,
+                    p, g, g,
+                    p, g, g
+            },{
+                    p, p, g,
+                    g, p, g,
+                    g, p, g
+            },{
+                    g, p, p,
+                    g, g, p,
+                    g, g, p
+            }};
 
 
 
@@ -68,8 +129,11 @@ public final class RSDynamicRecipeRegistry {
         for (RSDynamicRecipe recipe : getAllRecipesOfType(recipeCategory)) {
             //Check that specialArgs matches if using shaped hammering
             if (recipeCategory == RSRecipeCategory.SHAPED_HAMMERING) {
-                if (recipe.input() == input && doListsMatch(recipe.specialArgs(),specialArgs)) {
-                    return recipe.output();
+                //Check if any pattern matches what we are doing
+                for (ForgeLevel[] pattern : recipe.specialArgs()) {
+                    if (recipe.input() == input && doListsMatch(List.of(pattern), specialArgs)) {
+                        return recipe.output();
+                    }
                 }
             }
             else {
@@ -89,11 +153,11 @@ public final class RSDynamicRecipeRegistry {
         addNewRecipe(new RSDynamicRecipe(ModItems.BASE_SHOVEL.get(), ModItems.HOT_SHOVEL.get(), RSRecipeCategory.FORGE_HEATING, null));
         addNewRecipe(new RSDynamicRecipe(ModItems.BASE_HOE.get(), ModItems.HOT_HOE.get(), RSRecipeCategory.FORGE_HEATING, null));
         //Hammering
-        addNewRecipe(new RSDynamicRecipe(ModItems.HOT_INGOT.get(), ModItems.HOT_PICKAXE.get(), RSRecipeCategory.SHAPED_HAMMERING, List.of(PICKAXE_SHAPE)));
-        addNewRecipe(new RSDynamicRecipe(ModItems.HOT_INGOT.get(), ModItems.HOT_AXE.get(), RSRecipeCategory.SHAPED_HAMMERING, List.of(AXE_SHAPE)));
-        addNewRecipe(new RSDynamicRecipe(ModItems.HOT_INGOT.get(), ModItems.HOT_SWORD.get(), RSRecipeCategory.SHAPED_HAMMERING, List.of(SWORD_SHAPE)));
-        addNewRecipe(new RSDynamicRecipe(ModItems.HOT_INGOT.get(), ModItems.HOT_SHOVEL.get(), RSRecipeCategory.SHAPED_HAMMERING, List.of(SHOVEL_SHAPE)));
-        addNewRecipe(new RSDynamicRecipe(ModItems.HOT_INGOT.get(), ModItems.HOT_HOE.get(), RSRecipeCategory.SHAPED_HAMMERING, List.of(HOE_SHAPE)));
+        addNewRecipe(new RSDynamicRecipe(ModItems.HOT_INGOT.get(), ModItems.HOT_PICKAXE.get(), RSRecipeCategory.SHAPED_HAMMERING, PICKAXE_SHAPES));
+        addNewRecipe(new RSDynamicRecipe(ModItems.HOT_INGOT.get(), ModItems.HOT_AXE.get(), RSRecipeCategory.SHAPED_HAMMERING, AXE_SHAPES));
+        addNewRecipe(new RSDynamicRecipe(ModItems.HOT_INGOT.get(), ModItems.HOT_SWORD.get(), RSRecipeCategory.SHAPED_HAMMERING, SWORD_SHAPES));
+        addNewRecipe(new RSDynamicRecipe(ModItems.HOT_INGOT.get(), ModItems.HOT_SHOVEL.get(), RSRecipeCategory.SHAPED_HAMMERING, SHOVEL_SHAPES));
+        addNewRecipe(new RSDynamicRecipe(ModItems.HOT_INGOT.get(), ModItems.HOT_HOE.get(), RSRecipeCategory.SHAPED_HAMMERING, HOE_SHAPES));
         //Quenching
         addNewRecipe(new RSDynamicRecipe(ModItems.HOT_PICKAXE.get(), ModItems.BASE_PICKAXE.get(), RSRecipeCategory.QUENCHING, null));
         addNewRecipe(new RSDynamicRecipe(ModItems.HOT_AXE.get(), ModItems.BASE_AXE.get(), RSRecipeCategory.QUENCHING, null));

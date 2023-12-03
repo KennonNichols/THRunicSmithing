@@ -2,6 +2,7 @@ package com.thathitmann.runicsmithing.event;
 
 import com.thathitmann.runicsmithing.RunicSmithing;
 import com.thathitmann.runicsmithing.item.custom.supers.smithing_chain.SmithingChainItem;
+import com.thathitmann.runicsmithing.item.custom.supers.smithing_chain.toolModifiers.ToolModifierStack;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -22,7 +23,10 @@ public class ModEvents {
     @SubscribeEvent
     public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
         if (event.side == LogicalSide.SERVER) {
+
+
             Player player = event.player;
+
 
             if (player.getInventory().contains(burningHotTag)) {
                 if(!player.getInventory().contains(heatInsulatingTag)) {

@@ -133,11 +133,11 @@ jar {
     manifest {
         attributes([
                 "Specification-Title"     : "runicsmithing",
-                "Specification-Vendor"    : "runicsmithingsareus",
+                "Specification-Vendor"    : "ThatHitmann",
                 "Specification-Version"   : "1", // We are version 1 of ourselves
                 "Implementation-Title"    : project.name,
-                "Implementation-Version"  : project.jar.archiveVersion,
-                "Implementation-Vendor"   : "runicsmithingsareus",
+                "Implementation-Version"  : "1.0.0-1.20.1",
+                "Implementation-Vendor"   : "ThatHitmann",
                 "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
         ])
     }

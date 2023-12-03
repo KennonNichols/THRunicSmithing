@@ -6,6 +6,7 @@ import com.thathitmann.runicsmithing.generators.RSRecipeCategory;
 import com.thathitmann.runicsmithing.item.ModItems;
 import com.thathitmann.runicsmithing.item.custom.supers.RunicSmithingMaterial;
 import com.thathitmann.runicsmithing.item.custom.supers.smithing_chain.ToolBase;
+import com.thathitmann.runicsmithing.item.custom.supers.smithing_chain.toolModifiers.ToolModifierStack;
 import com.thathitmann.runicsmithing.screen.ForgeBlockMenu;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -104,7 +105,12 @@ public class ForgeBlockEntity extends ForgeBlockEntityParent implements MenuProv
                 forgeOutput = new ItemStack(ModItems.HOT_INGOT.get(), entity.itemHandler.getStackInSlot(1).getCount() + 1);
                 CompoundTag tag = new CompoundTag();
                 tag.putInt("CustomModelData", material.ordinal());
-                tag.putInt("runicsmithing.material", material.ordinal());
+
+                //Tag it with material
+                CompoundTag quickgrabTag = new CompoundTag();
+                quickgrabTag.putInt(ToolModifierStack.QUICKGRAB_MATERIAL_TAG_ID, material.ordinal());
+                tag.put(ToolModifierStack.QUICKGRAB_TAG_ID, quickgrabTag);
+
                 forgeOutput.setTag(tag);
                 forgeOutput.setHoverName(Component.literal(String.format("Hot %s Ingot", StringUtils.capitalize(material.getMaterialName())).strip()));
             }
