@@ -9,6 +9,7 @@ import com.thathitmann.runicsmithing.item.custom.supers.smithing_chain.ToolBase;
 import com.thathitmann.runicsmithing.item.custom.supers.smithing_chain.toolModifiers.AspectModifier;
 import com.thathitmann.runicsmithing.item.custom.supers.smithing_chain.toolModifiers.ToolModifierStack;
 import com.thathitmann.runicsmithing.screen.CoreForgeBlockMenu;
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -65,7 +66,7 @@ public class CoreForgeBlockEntity extends ForgeBlockEntityParent implements Menu
         //Cool down otherwise
         else {
             if (entity.heatPercentage >= 100) {
-                setToUnlit(level, blockPos, blockState);
+                setToUnlit(level, blockPos, blockState, true);
             }
             if (entity.heatPercentage > 0) {
                 entity.heatPercentage--;
@@ -93,36 +94,8 @@ public class CoreForgeBlockEntity extends ForgeBlockEntityParent implements Menu
 
     }
 
-    private static AspectModifier getDepthAspect(BlockState state) {
-        int depth = state.getValue(DEPTH);
-        AspectModifier depthAspect;
 
-        if (depth > 500) {
-            return new AspectModifier("Coreforged at " + -depth + " for +15 quality.", 15);
-        } else if (depth > 450) {
-            return new AspectModifier("Hellforged at " + -depth + " for +10 quality.", 10);
-        } else if (depth > 400) {
-            return new  AspectModifier("Netherforged at " + -depth + " for +9 quality.", 9);
-        } else if (depth > 350) {
-            return new  AspectModifier("Stygianforged at " + -depth + " for +8 quality.", 8);
-        } else if (depth > 300) {
-            return new AspectModifier("Ultradeepforged at " + -depth + " for +7 quality.", 7);
-        } else if (depth > 250) {
-            return new AspectModifier("Deepforged at " + -depth + " for +6 quality.", 6);
-        } else if (depth > 200) {
-            return new AspectModifier("Dwarvforged at " + -depth + " for +5 quality.", 5);
-        } else if (depth > 150) {
-            return new AspectModifier("Extreme pressure forged at " + -depth + " for +4 quality.", 4);
-        } else if (depth > 100) {
-            return new AspectModifier("Pressure forged at " + -depth + " for +3 quality.", 3);
-        } else if (depth > 50) {
-            return new  AspectModifier("Low-pressure forged at " + -depth + " for +2 quality.", 2);
-        } else if (depth > 0) {
-            return new AspectModifier("Depth forged at " + -depth + " for +1 quality.", 1);
-        } else {
-            return new AspectModifier("Normally forged for no quality bonus.", 0);
-        }
-    }
+
 
     private static void craftItem(ForgeBlockEntityParent entity, SimpleContainer inventory) {
         if (hasRecipe(entity, inventory)) {
@@ -143,9 +116,11 @@ public class CoreForgeBlockEntity extends ForgeBlockEntityParent implements Menu
                 tag.put(ToolModifierStack.QUICKGRAB_TAG_ID, quickgrabTag);
 
 
-                //Add depth aspect
-                ToolModifierStack.addToolModifierAndTransferNBT(tag, tag, getDepthAspect(entity.getBlockState()));
-
+                //Add depth aspect, if it exists
+                AspectModifier modifier = AspectModifier.getDepthAspect(entity.getBlockState().getValue(DEPTH), Minecraft.getInstance().level.getMinBuildHeight() >= -64);
+                if (modifier != null) {
+                    ToolModifierStack.addToolModifierAndTransferNBT(tag, tag, modifier);
+                }
 
 
                 forgeOutput.setTag(tag);

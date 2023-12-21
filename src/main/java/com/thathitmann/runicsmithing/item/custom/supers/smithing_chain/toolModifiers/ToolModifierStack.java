@@ -24,13 +24,24 @@ public class ToolModifierStack {
         this.modifierStack = modifierStack;
     }
 
+    public static ToolModifierStack getBlankInstance() {
+        return new ToolModifierStack(new ArrayList<>());
+    }
+
+    public void duplicateDataFrom(ToolModifierStack toolModifierStack) {
+        clearData();
+        modifierStack.addAll(toolModifierStack.modifierStack);
+    }
+
+
+    public void clearData() {
+        modifierStack.clear();
+    }
+
     public static void loadQuickGrab(ItemStack itemStack) {
         CompoundTag mainTag = itemStack.getTag();
         if (mainTag == null) {return;}
         CompoundTag quickgrabTag = mainTag.getCompound(QUICKGRAB_TAG_ID);
-        if (quickgrabTag == null) {
-            quickgrabTag = new CompoundTag();
-        }
         quickgrabTag.putInt(QUICKGRAB_QUALITY_TAG_ID, buildFromTag(mainTag.getCompound(TOOL_MODIFIER_STACK_TAG_ID)).getQualityTotal());
     }
 
@@ -72,7 +83,7 @@ public class ToolModifierStack {
             }
 
             if (modifier instanceof AspectModifier aspectModifier) {
-                aspectBuilder.append(aspectModifier.name);
+                aspectBuilder.append(aspectModifier.name).append(": ").append(aspectModifier.description);
             }
         }
 
@@ -110,6 +121,10 @@ public class ToolModifierStack {
     }
 
 
+    public int getModifierCount() {
+        return modifierStack.size();
+    }
+
 
     public CompoundTag getAsTag() {
         CompoundTag outTag = new CompoundTag();
@@ -130,5 +145,7 @@ public class ToolModifierStack {
         return outTag;
     }
 
-
+    public List<ToolModifier> getModifierList() {
+        return modifierStack;
+    }
 }

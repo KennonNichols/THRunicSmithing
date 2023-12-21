@@ -61,7 +61,7 @@ public class ForgeBlockEntity extends ForgeBlockEntityParent implements MenuProv
         //Cool down otherwise
         else {
             if (entity.heatPercentage >= 100) {
-                setToUnlit(level, blockPos, blockState);
+                setToUnlit(level, blockPos, blockState, true);
             }
 
 

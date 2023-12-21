@@ -29,6 +29,7 @@ public class StoneHammerItem extends ForgeHammer {
         if (!level.isClientSide() && Objects.requireNonNull(player).getOffhandItem().getItem() instanceof ForgeHammer && player.getMainHandItem().getItem() instanceof HotIngotBase && (level.getBlockState(blockpos).is(ModBlocks.STONE_ANVIL_BLOCK.get()))) {
             advancedMode = false;
             NetworkHooks.openScreen(((ServerPlayer) player), this, player.blockPosition());
+            return InteractionResult.CONSUME;
         }
         return InteractionResult.PASS;
     }

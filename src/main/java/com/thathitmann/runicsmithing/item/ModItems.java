@@ -51,6 +51,9 @@ public class ModItems {
 
 
 
+    //Tablet
+    public static final RegistryObject<Item> TABLET = ITEMS.register("research_tablet",
+            () -> new ResearchTabletItem(new Item.Properties()));
     //Tongs
     public static final RegistryObject<Item> TONGS = ITEMS.register("tongs",
             () -> new TongsItem(new Item.Properties()));

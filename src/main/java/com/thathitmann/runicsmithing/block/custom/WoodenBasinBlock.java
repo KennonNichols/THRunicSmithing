@@ -58,6 +58,7 @@ public class WoodenBasinBlock extends Block {
             if (heldItemStack.getItem() == Items.POTION) {player.getInventory().setItem(player.getInventory().selected, new ItemStack(Items.GLASS_BOTTLE)); level.setBlock(blockPos, blockState.setValue(FILLED, true),3);}
             //Drain bucket
             else if (heldItemStack.getItem() == Items.WATER_BUCKET) {player.getInventory().setItem(player.getInventory().selected, new ItemStack(Items.BUCKET)); level.setBlock(blockPos, blockState.setValue(FILLED, true),3);}
+            return InteractionResult.CONSUME;
         }
 
 

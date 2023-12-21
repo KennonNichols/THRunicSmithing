@@ -2,11 +2,13 @@
   "creativemodetab:runicsmithing_tab" : "Runic Smithing",
   "item.runicsmithing.stone_smithing_hammer" : "Stone Smithing Hammer",
   "item.runicsmithing.iron_smithing_hammer" : "Iron Smithing Hammer",
+  "item.runicsmithing.research_tablet" : "Research Tablet",
   "item.runicsmithing.charcoal_briquette" : "Charcoal Briquette",
   "item.runicsmithing.tongs" : "Forge Tongs",
   "item.runicsmithing.gloves" : "Forge Gloves",
   "block.runicsmithing.wooden_basin_block" : "Wooden Basin",
   "block.runicsmithing.stone_anvil_block" : "Stone Anvil",
   "block.runicsmithing.forge_block" : "Copper Forge",
-  "block.runicsmithing.core_forge_block" : "Core Forge"
+  "block.runicsmithing.core_forge_block" : "Core Forge",
+  "block.runicsmithing.tool_station_block" : "Tool Station"
 }

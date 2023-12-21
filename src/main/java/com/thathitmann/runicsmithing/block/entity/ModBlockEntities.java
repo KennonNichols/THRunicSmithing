@@ -27,6 +27,12 @@ public class ModBlockEntities {
             BLOCK_ENTITIES.register("forge_block", () ->
                     BlockEntityType.Builder.of(ForgeBlockEntity::new,
                             ModBlocks.FORGE_BLOCK.get()).build(null));
+    public static final RegistryObject<BlockEntityType<ToolStationBlockEntity>> TOOL_STATION_BLOCK =
+            BLOCK_ENTITIES.register("tool_station_block", () ->
+                    BlockEntityType.Builder.of(ToolStationBlockEntity::new,
+                            ModBlocks.TOOL_STATION_BLOCK.get()).build(null));
+
+
 
 
 

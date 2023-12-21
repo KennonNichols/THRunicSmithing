@@ -145,7 +145,7 @@ public class CoreForgeBlock extends BaseEntityBlock {
 
 
 
-
+            return InteractionResult.CONSUME;
 
 
         }

@@ -1,0 +1,7 @@
+{
+    "variants": {
+        "": {
+            "model": "runicsmithing:block/tool_station_block"
+        }
+    }
+}

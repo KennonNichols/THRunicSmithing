@@ -1,10 +1,7 @@
 package com.thathitmann.runicsmithing.block;
 
 import com.thathitmann.runicsmithing.RunicSmithing;
-import com.thathitmann.runicsmithing.block.custom.CoreForgeBlock;
-import com.thathitmann.runicsmithing.block.custom.ForgeBlock;
-import com.thathitmann.runicsmithing.block.custom.StoneAnvilBlock;
-import com.thathitmann.runicsmithing.block.custom.WoodenBasinBlock;
+import com.thathitmann.runicsmithing.block.custom.*;
 import com.thathitmann.runicsmithing.item.ModItems;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
@@ -43,6 +40,9 @@ public class ModBlocks {
 
     public static final RegistryObject<Block> CORE_FORGE_BLOCK = registerBlock("core_forge_block",
             () -> new CoreForgeBlock(BlockBehaviour.Properties.copy(Blocks.BLAST_FURNACE).requiresCorrectToolForDrops().lightLevel(state -> state.getValue(CoreForgeBlock.LIT) ? 15 : 0)));
+
+    public static final RegistryObject<Block> TOOL_STATION_BLOCK = registerBlock("tool_station_block",
+            () -> new ToolStationBlock(BlockBehaviour.Properties.copy(Blocks.OAK_PLANKS)));
 
     public static final RegistryObject<Block> STONE_ANVIL_BLOCK = registerBlock("stone_anvil_block",
             () -> new StoneAnvilBlock(BlockBehaviour.Properties.copy(Blocks.COBBLESTONE).requiresCorrectToolForDrops().noOcclusion()));

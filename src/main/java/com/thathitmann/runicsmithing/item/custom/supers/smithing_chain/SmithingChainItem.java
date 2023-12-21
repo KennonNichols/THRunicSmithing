@@ -40,6 +40,7 @@ public class SmithingChainItem extends THRSItemBase {
 
     private static AspectModifier quenchAspect(int temperCount) {
         return new AspectModifier(
+                "Quenched",
                 String.format("Quenched %s %s for +1 quality.",
                         temperCount,
                         //If the count is greater than one, do "times"
@@ -49,6 +50,7 @@ public class SmithingChainItem extends THRSItemBase {
     }
     private static AspectModifier temperAspect(int temperCount) {
         return new AspectModifier(
+                "Tempered",
                 String.format("Tempered %s %s for +2 quality.",
                         temperCount,
                         //If the count is greater than one, do "times"
@@ -84,9 +86,6 @@ public class SmithingChainItem extends THRSItemBase {
     @Override
     public void appendHoverText(@NotNull ItemStack itemStack, @Nullable Level level, @NotNull List<Component> components, @NotNull TooltipFlag flag) {
         if (Screen.hasShiftDown()) {
-
-
-
             components.add(Component.literal(tooltip).withStyle(ChatFormatting.DARK_PURPLE));
             String outputString = ToolModifierStack.buildFromTag(itemStack.getTag().getCompound(ToolModifierStack.TOOL_MODIFIER_STACK_TAG_ID)).getWritableList();
             components.add(Component.literal(outputString).withStyle(ChatFormatting.LIGHT_PURPLE));

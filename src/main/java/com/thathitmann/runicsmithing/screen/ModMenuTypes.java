@@ -22,7 +22,10 @@ public class ModMenuTypes {
             registerMenuType(CoreForgeBlockMenu::new, "core_forge_block_menu");
     public static final RegistryObject<MenuType<HammeringMenu>> HAMMERING_MENU =
             registerMenuType(HammeringMenu::new, "hammering_menu");
-
+    public static final RegistryObject<MenuType<ToolStationBlockMenu>> TOOL_STATION_BLOCK_MENU =
+            registerMenuType(ToolStationBlockMenu::new, "tool_station_block_menu");
+    public static final RegistryObject<MenuType<ResearchMenu>> RESEARCH_TABLET_MENU =
+            registerMenuType(ResearchMenu::new, "research_tablet_menu");
 
 
 

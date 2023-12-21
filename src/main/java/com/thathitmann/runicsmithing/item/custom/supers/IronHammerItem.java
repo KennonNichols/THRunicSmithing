@@ -52,6 +52,7 @@ public class IronHammerItem extends ForgeHammer {
                     NetworkHooks.openScreen(((ServerPlayer) player), this, player.blockPosition());
                 }
             }
+            return InteractionResult.CONSUME;
         }
         return InteractionResult.PASS;
     }

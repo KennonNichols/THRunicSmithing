@@ -114,7 +114,7 @@ public class HammeringMenu extends AbstractContainerMenu {
                 outputItemStack = new ItemStack(result, player.getMainHandItem().getCount());
                 CompoundTag tag = inputStack.getTag();
                 if (entity.isAdvancedMode()) {
-                    ToolModifierStack.addToolModifierAndTransferNBT(tag, tag, new AspectModifier("Forged with iron tools for +3 quality.", 3));
+                    ToolModifierStack.addToolModifierAndTransferNBT(tag, tag, new AspectModifier("Well Forged", "Forged with iron tools for +3 quality.", 3));
                 }
                 outputItemStack.setTag(tag);
                 outputItemStack.setHoverName(Component.literal(String.format(GeneratedItemRegistry.getGeneratableItem(result).formatableName(), StringUtils.capitalize(RunicSmithingMaterial.values()[tag.getCompound(ToolModifierStack.QUICKGRAB_TAG_ID).getInt(ToolModifierStack.QUICKGRAB_MATERIAL_TAG_ID)].getMaterialName()))));

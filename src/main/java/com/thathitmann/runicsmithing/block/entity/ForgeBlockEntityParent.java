@@ -43,10 +43,12 @@ public abstract class ForgeBlockEntityParent extends BlockEntity implements Menu
     }
 
 
-    protected static void setToUnlit(Level level, BlockPos blockPos, BlockState blockState) {
-        level.playSeededSound(null, blockPos.getX(), blockPos.getY(), blockPos.getZ(), SoundEvents.FIRE_EXTINGUISH, SoundSource.PLAYERS, 1f,1f,0);
+    protected static void setToUnlit(Level level, BlockPos blockPos, BlockState blockState, boolean playSound) {
+        if (playSound) {
+            level.playSeededSound(null, blockPos.getX(), blockPos.getY(), blockPos.getZ(), SoundEvents.FIRE_EXTINGUISH, SoundSource.PLAYERS, 1f, 1f, 0);
+        }
 
-        level.setBlock(blockPos, blockState.setValue(LIT, false),3);
+        level.setBlock(blockPos, blockState.setValue(LIT, false), 3);
     }
 
 
@@ -111,7 +113,7 @@ public abstract class ForgeBlockEntityParent extends BlockEntity implements Menu
     @Override
     public void onLoad() {
         super.onLoad();
-        setToUnlit(level, this.worldPosition, this.getBlockState());
+        setToUnlit(level, this.worldPosition, this.getBlockState(), false);
         lazyItemHandler = LazyOptional.of(() -> itemHandler);
     }
 
@@ -131,6 +133,11 @@ public abstract class ForgeBlockEntityParent extends BlockEntity implements Menu
     public void load(@NotNull CompoundTag nbt) {
         super.load(nbt);
         itemHandler.deserializeNBT(nbt.getCompound("inventory"));
+    }
+
+    @Override
+    public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap) {
+        return super.getCapability(cap);
     }
 
     public void drops() {

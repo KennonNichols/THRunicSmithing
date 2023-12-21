@@ -21,6 +21,11 @@ public class ForgeBlockScreen extends AbstractContainerScreen<ForgeBlockMenu> {
         super(forgeBlockMenu, inventory, component);
     }
 
+    @Override
+    public void render(GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
+        super.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
+        this.renderTooltip(pGuiGraphics, pMouseX, pMouseY);
+    }
 
     @Override
     protected void renderBg(@NotNull GuiGraphics pGuiGraphics, float partialTick, int mouseX, int mouseY) {

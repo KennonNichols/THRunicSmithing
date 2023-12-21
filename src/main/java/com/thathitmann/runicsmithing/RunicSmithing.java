@@ -10,11 +10,10 @@ import com.thathitmann.runicsmithing.item.ModItems;
 import com.thathitmann.runicsmithing.generators.GeneratedItemRegistry;
 import com.thathitmann.runicsmithing.item.custom.supers.GeneratableItem;
 import com.thathitmann.runicsmithing.item.custom.supers.RunicSmithingMaterial;
+import com.thathitmann.runicsmithing.item.custom.supers.smithing_chain.toolModifiers.AspectModifier;
 import com.thathitmann.runicsmithing.item.custom.supers.smithing_chain.toolModifiers.ToolModifierStack;
-import com.thathitmann.runicsmithing.screen.CoreForgeBlockScreen;
-import com.thathitmann.runicsmithing.screen.ForgeBlockScreen;
-import com.thathitmann.runicsmithing.screen.HammeringScreen;
-import com.thathitmann.runicsmithing.screen.ModMenuTypes;
+import com.thathitmann.runicsmithing.particle.ModParticles;
+import com.thathitmann.runicsmithing.screen.*;
 import com.thathitmann.runicsmithing.sound.ModSounds;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.nbt.CompoundTag;
@@ -62,6 +61,8 @@ public class RunicSmithing
         ModMenuTypes.register(modEventBus);
         //Register sounds
         ModSounds.register(modEventBus);
+        //Register particles
+        ModParticles.register(modEventBus);
         //Register the recipes
         //ModRecipes.register(modEventBus);
         // Register the commonSetup method for modloading
@@ -78,7 +79,7 @@ public class RunicSmithing
 
     private void commonSetup(final FMLCommonSetupEvent ignoredEvent)
     {
-        //Cook the recipes on world open
+        //Cook the recipes on minecraft starting
         RSDynamicRecipeRegistry.cook();
     }
 
@@ -90,6 +91,7 @@ public class RunicSmithing
             event.accept(ModItems.IRON_SMITHING_HAMMER);
             event.accept(ModItems.STONE_SMITHING_HAMMER);
             event.accept(ModItems.TONGS);
+            event.accept(ModItems.TABLET);
 
 
             //Generated stuff
@@ -115,9 +117,30 @@ public class RunicSmithing
 
             event.accept(ModBlocks.FORGE_BLOCK);
             event.accept(ModBlocks.CORE_FORGE_BLOCK);
+            event.accept(ModBlocks.TOOL_STATION_BLOCK);
             event.accept(ModBlocks.STONE_ANVIL_BLOCK);
             event.accept(ModBlocks.WOODEN_BASIN_BLOCK);
 
+
+
+
+            //Debug sword
+            ItemStack newItemStack = new ItemStack(ModItems.FORGED_SWORD.get(), 1);
+            ToolModifierStack modifierStack = ToolModifierStack.getBlankInstance();
+            for (int i = 0; i < 20; i++) {
+                modifierStack.addToolModifier(
+                    new AspectModifier("Debug mod " + i, "This is a debug modifier.", i)
+                );
+            }
+
+            //Adds the three longest modifiers
+            modifierStack.addToolModifier(AspectModifier.getDepthAspect(1, true));
+            modifierStack.addToolModifier(AspectModifier.getDepthAspect(151, true));
+            modifierStack.addToolModifier(AspectModifier.getDepthAspect(301, true));
+
+            newItemStack.getOrCreateTag().put(ToolModifierStack.TOOL_MODIFIER_STACK_TAG_ID, modifierStack.getAsTag());
+            ToolModifierStack.loadQuickGrab(newItemStack);
+            event.accept(newItemStack);
         }
 
     }
@@ -132,8 +155,10 @@ public class RunicSmithing
         public static void onClientSetup(FMLClientSetupEvent event)
         {
             MenuScreens.register(ModMenuTypes.FORGE_BLOCK_MENU.get(), ForgeBlockScreen::new);
+            MenuScreens.register(ModMenuTypes.TOOL_STATION_BLOCK_MENU.get(), ToolStationBlockScreen::new);
             MenuScreens.register(ModMenuTypes.CORE_FORGE_BLOCK_MENU.get(), CoreForgeBlockScreen::new);
             MenuScreens.register(ModMenuTypes.HAMMERING_MENU.get(), HammeringScreen::new);
+            MenuScreens.register(ModMenuTypes.RESEARCH_TABLET_MENU.get(), ResearchScreen::new);
         }
     }
 

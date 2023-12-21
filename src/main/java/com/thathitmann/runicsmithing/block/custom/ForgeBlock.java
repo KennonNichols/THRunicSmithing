@@ -124,7 +124,7 @@ public class ForgeBlock extends BaseEntityBlock {
 
 
 
-
+            return InteractionResult.CONSUME;
 
         }
 
