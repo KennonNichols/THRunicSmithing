@@ -3,6 +3,8 @@ package com.thathitmann.runicsmithing.item.custom;
 import com.thathitmann.runicsmithing.event.ModEvents;
 import com.thathitmann.runicsmithing.item.ModItems;
 import com.thathitmann.runicsmithing.item.custom.supers.THRSItemBase;
+import com.thathitmann.runicsmithing.networking.ModMessages;
+import com.thathitmann.runicsmithing.networking.packet.RuneKnowledgeDataSyncS2CPacket;
 import com.thathitmann.runicsmithing.runes.PlayerRuneKnowledgeProvider;
 import com.thathitmann.runicsmithing.runes.Quest;
 import com.thathitmann.runicsmithing.screen.ResearchMenu;
@@ -52,6 +54,10 @@ public class ResearchTabletItem extends THRSItemBase implements MenuProvider {
     public @NotNull InteractionResult useOn(UseOnContext pContext) {
         AtomicBoolean isComplete = new AtomicBoolean(false);
 
+        Player player = pContext.getPlayer();
+
+
+
         pContext.getPlayer().getCapability(PlayerRuneKnowledgeProvider.PLAYER_RUNE_KNOWLEDGE).ifPresent(playerRuneKnowledge -> {
             BlockState state = pContext.getLevel().getBlockState(pContext.getClickedPos());
             if (state.is(Blocks.ENCHANTING_TABLE) && playerRuneKnowledge.getCurrentQuest() instanceof Quest.EatRuneQuest eatRuneQuest) {
@@ -95,6 +101,14 @@ public class ResearchTabletItem extends THRSItemBase implements MenuProvider {
     @Nullable
     @Override
     public AbstractContainerMenu createMenu(int pContainerId, @NotNull Inventory pPlayerInventory, @NotNull Player pPlayer) {
+
+        //Sync data from server before opening
+        if (pPlayer instanceof ServerPlayer serverPlayer) {
+            serverPlayer.getCapability(PlayerRuneKnowledgeProvider.PLAYER_RUNE_KNOWLEDGE).ifPresent(runeKnowledge -> {
+                ModMessages.sendToPlayer(new RuneKnowledgeDataSyncS2CPacket(runeKnowledge.getKnownCharacters(), serverPlayer), serverPlayer);
+            });
+        }
+
         return new ResearchMenu(pContainerId, pPlayerInventory);
     }
 }

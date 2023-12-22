@@ -17,6 +17,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class ResearchScreen extends AbstractContainerScreen<ResearchMenu> {
 
@@ -118,8 +119,7 @@ public class ResearchScreen extends AbstractContainerScreen<ResearchMenu> {
 
             @Override
             public void onPress() {
-                //TODO
-                menu.player.sendSystemMessage(Component.literal("(the player should not know that they chose " + word.name() + " (" + rune.getAssociatedWord() + ")) length is:" + word.getLength()));
+                //menu.player.sendSystemMessage(Component.literal("(the player should not know that they chose " + word.name() + " (" + rune.getAssociatedWord() + ")) length is:" + word.getLength()));
 
                 //Shows only what portion of the word the player knows
                 menu.player.getCapability(PlayerRuneKnowledgeProvider.PLAYER_RUNE_KNOWLEDGE).ifPresent(playerRuneKnowledge -> {
@@ -127,6 +127,7 @@ public class ResearchScreen extends AbstractContainerScreen<ResearchMenu> {
                     if (!playerRuneKnowledge.isWordKnown(runeCharacter)) {
                         runeWord = playerRuneKnowledge.getKnownWord(runeCharacter);
                         playerRuneKnowledge.setCurrentLearningCharacter(runeCharacter);
+                        runeTranslation = playerRuneKnowledge.getCurrentQuest().message;
                     }
                 });
             }
@@ -149,6 +150,9 @@ public class ResearchScreen extends AbstractContainerScreen<ResearchMenu> {
                         weakRuneWord = playerRuneKnowledge.getKnownWord(runeCharacter);
                         if (playerRuneKnowledge.isWordKnown(runeCharacter)) {
                             runeTranslation = RuneTranslationList.RuneWord.getWordFromCharacter(runeCharacter).name();
+                        }
+                        else if (playerRuneKnowledge.getCurrentQuest() != null && !runeWord.equals("")) {
+                            runeTranslation = playerRuneKnowledge.getCurrentQuest().message;
                         }
                         else {
                             runeTranslation = "";
@@ -202,9 +206,15 @@ public class ResearchScreen extends AbstractContainerScreen<ResearchMenu> {
             intColor = 6831720;
         }
 
-        RuneTranslationList.drawRunicWordCenteredAt(pGuiGraphics, xStart + imageWidth / 2, yStart + imageHeight + 10, drawnWord, color);
-        pGuiGraphics.drawString(Minecraft.getInstance().font, runeTranslation, xStart + imageWidth / 2 - Minecraft.getInstance().font.width(runeTranslation) / 2, yStart + imageHeight + 20, intColor, false);
 
+        RuneTranslationList.drawRunicWordCenteredAt(pGuiGraphics, xStart + imageWidth / 2, yStart + imageHeight + 10, drawnWord, color);
+        //if (!Objects.equals(runeTranslation, "")) {
+            //Draw translation if we know it
+        pGuiGraphics.drawString(Minecraft.getInstance().font, runeTranslation, xStart + imageWidth / 2 - Minecraft.getInstance().font.width(runeTranslation) / 2, yStart + imageHeight + 20, intColor, false);
+        //}
+        //else {
+        //    pGuiGraphics.drawString(Minecraft.getInstance().font, runeTranslation, xStart + imageWidth / 2 - Minecraft.getInstance().font.width(runeTranslation) / 2, yStart + imageHeight + 20, intColor, false);
+        //}
 
     }
 

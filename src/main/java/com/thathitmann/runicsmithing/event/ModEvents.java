@@ -2,13 +2,18 @@ package com.thathitmann.runicsmithing.event;
 
 import com.thathitmann.runicsmithing.RunicSmithing;
 import com.thathitmann.runicsmithing.item.custom.supers.smithing_chain.SmithingChainItem;
+import com.thathitmann.runicsmithing.networking.ModMessages;
+import com.thathitmann.runicsmithing.networking.packet.RuneKnowledgeDataSyncS2CPacket;
+import com.thathitmann.runicsmithing.runes.PlayerRuneKnowledge;
 import com.thathitmann.runicsmithing.runes.PlayerRuneKnowledgeProvider;
 import com.thathitmann.runicsmithing.runes.Quest;
 import com.thathitmann.runicsmithing.runes.RuneTranslationList;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.Sound;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -23,6 +28,7 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.event.sound.SoundEvent;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.item.ItemTossEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
@@ -35,10 +41,11 @@ import net.minecraftforge.event.server.ServerStartedEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.common.Mod;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import static com.thathitmann.runicsmithing.RunicSmithing.burningHotTag;
@@ -67,6 +74,7 @@ public class ModEvents {
     @SubscribeEvent
     public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
         if (event.side == LogicalSide.SERVER) {
+            //Server side
             Player player = event.player;
             if (player.getInventory().contains(burningHotTag)) {
                 if(!player.getInventory().contains(heatInsulatingTag)) {
@@ -75,8 +83,46 @@ public class ModEvents {
                     }
                 }
             }
+
+
+
+            player.getCapability(PlayerRuneKnowledgeProvider.PLAYER_RUNE_KNOWLEDGE).ifPresent(playerRuneKnowledge -> {
+                //System.out.println("SERVER SIDE");
+                //System.out.println(playerRuneKnowledge.getKnownCharacters());
+            });
+        }
+        else {
+            //Client side
+            Player player = event.player;
+            //If the player is in the list
+            if (queuedProgressSync.containsKey(player)) {
+                player.getCapability(PlayerRuneKnowledgeProvider.PLAYER_RUNE_KNOWLEDGE).ifPresent(playerRuneKnowledge -> {
+                    System.out.println("CLIENT SIDE");
+                    System.out.println(playerRuneKnowledge.getKnownCharacters());
+
+
+                    //Place queued knowledge
+                    playerRuneKnowledge.copyKnowledgeFrom(queuedProgressSync.get(player));
+                    queuedProgressSync.remove(player);
+                });
+            }
+
+
+
         }
     }
+
+    private static final Map<Player, Map<Character, PlayerRuneKnowledge.PlayerRuneLearningProgress>> queuedProgressSync = new HashMap<>() {
+    };
+
+
+    public static void queueProgressSync(@NotNull int playerId, Map<Character, PlayerRuneKnowledge.PlayerRuneLearningProgress> knownCharacters) {
+        queuedProgressSync.put((Player) Minecraft.getInstance().level.getEntity(playerId), knownCharacters);
+        System.out.println(queuedProgressSync);
+    }
+
+
+
 
 
     //region quest events
@@ -260,6 +306,30 @@ public class ModEvents {
         return false;
     }
 
+
+
+
+
+
+    @SubscribeEvent
+    public static void onPlayerJoinWorld(EntityJoinLevelEvent event) {
+        if(!event.getLevel().isClientSide()) {
+            if(event.getEntity() instanceof ServerPlayer player) {
+                player.getCapability(PlayerRuneKnowledgeProvider.PLAYER_RUNE_KNOWLEDGE).ifPresent(runeKnowledge -> {
+                    ModMessages.sendToPlayer(new RuneKnowledgeDataSyncS2CPacket(runeKnowledge.getKnownCharacters(), player), player);
+                });
+            }
+        }
+    }
+
+
+
+
+
+
+
+
+
     private static class RuneEatingHandler {
         private final Player player;
         private final int length;
@@ -293,36 +363,23 @@ public class ModEvents {
             Vec3 playerEyePos = player.getEyePosition();
 
 
-            double xPlayerShift = rand.nextDouble(-1, 1);
-            double zPlayerShift = rand.nextDouble(-1, 1);
-            double yPlayerShift = rand.nextDouble(-1, 1);
+            int count = 1 + currentFrame / 100;
 
-            double xShift = rand.nextDouble(-0.3, 0.3);
-            double zShift = rand.nextDouble(-0.3, 0.3);
-            double yShift = 0.7;
+            if (rand.nextInt(600) <= currentFrame) {
+                throwEnchantParticle(player.level(), pos.getCenter(), playerEyePos, count);
+            }
 
-            double xTableLocation = pos.getCenter().x + xShift;
-            double yTableLocation = pos.getCenter().y + yShift;
-            double zTableLocation = pos.getCenter().z + zShift;
-
-            double xPlayerLocation = playerEyePos.x() + xPlayerShift;
-            double yPlayerLocation = playerEyePos.y() + yPlayerShift;
-            double zPlayerLocation = playerEyePos.z() + zPlayerShift;
-
-            double xSpeed = (xTableLocation - xPlayerLocation);
-            double ySpeed = (yTableLocation - yPlayerLocation);
-            double zSpeed = (zTableLocation - zPlayerLocation);
-
+            /*
             //Chance gets higher as we get later into the animation
             if (rand.nextInt(64) <= currentFrame) {
-                player.level().addParticle(ParticleTypes.ENCHANT, xPlayerLocation, yPlayerLocation, zPlayerLocation, xSpeed, ySpeed, zSpeed);
+                throwEnchantParticle(player.level(), pos.getCenter(), playerEyePos);
             }
             if (rand.nextInt(256) <= currentFrame) {
-                player.level().addParticle(ParticleTypes.ENCHANT, xPlayerLocation, yPlayerLocation, zPlayerLocation, xSpeed, ySpeed, zSpeed);
+                throwEnchantParticle(player.level(), pos.getCenter(), playerEyePos);
             }
             if (rand.nextInt(600) <= currentFrame) {
-                player.level().addParticle(ParticleTypes.ENCHANT, xPlayerLocation, yPlayerLocation, zPlayerLocation, xSpeed, ySpeed, zSpeed);
-            }
+                throwEnchantParticle(player.level(), pos.getCenter(), playerEyePos);
+            }*/
 
             if (rand.nextFloat() < 0.02f && soundTimer <= 0) {
                 player.playNotifySound(SoundEvents.PORTAL_AMBIENT, SoundSource.BLOCKS, volume, 0);
@@ -334,7 +391,7 @@ public class ModEvents {
 
 
             //Circle the player
-            placeCircledParticle(player.getEyePosition(), -1.0d, angle, player.level());
+            //placeCircledParticle(player.getEyePosition(), -1.0d, angle, player.level());
             //Circle the table
             placeCircledParticle(pos.getCenter(), 0, -angle, player.level());
             angle += 0.1;
@@ -346,6 +403,33 @@ public class ModEvents {
             double z = pPos.z() + Math.sin(angle);
             player.level().addParticle(ParticleTypes.PORTAL, x, y, z, 0, 0, 0);
         }
+
+        private void throwEnchantParticle(Level level, Vec3 tablePos, Vec3 playerPos, int count) {
+            for (int i = 0; i < count; i++) {
+                double xPlayerShift = rand.nextDouble(-1, 1);
+                double zPlayerShift = rand.nextDouble(-1, 1);
+                double yPlayerShift = rand.nextDouble(-1, 1);
+
+                double xShift = rand.nextDouble(-0.3, 0.3);
+                double zShift = rand.nextDouble(-0.3, 0.3);
+                double yShift = 0.7;
+
+                double xTableLocation = tablePos.x() + xShift;
+                double yTableLocation = tablePos.y() + yShift;
+                double zTableLocation = tablePos.z() + zShift;
+
+                double xPlayerLocation = playerPos.x() + xPlayerShift;
+                double yPlayerLocation = playerPos.y() + yPlayerShift;
+                double zPlayerLocation = playerPos.z() + zPlayerShift;
+
+                double xSpeed = (xTableLocation - xPlayerLocation);
+                double ySpeed = (yTableLocation - yPlayerLocation);
+                double zSpeed = (zTableLocation - zPlayerLocation);
+
+                level.addParticle(ParticleTypes.ENCHANT, xPlayerLocation, yPlayerLocation, zPlayerLocation, xSpeed, ySpeed, zSpeed);
+            }
+        }
+
 
     }
     //endregion

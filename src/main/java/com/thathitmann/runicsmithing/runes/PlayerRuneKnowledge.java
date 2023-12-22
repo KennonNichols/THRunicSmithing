@@ -1,10 +1,11 @@
 package com.thathitmann.runicsmithing.runes;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.ParticleTypes;
+import com.thathitmann.runicsmithing.networking.ModMessages;
+import com.thathitmann.runicsmithing.networking.packet.RuneKnowledgeDataSyncC2SPacket;
+import com.thathitmann.runicsmithing.networking.packet.RuneKnowledgeDataSyncS2CPacket;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.player.Player;
@@ -12,7 +13,6 @@ import net.minecraft.world.entity.player.Player;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Random;
 
 public class PlayerRuneKnowledge {
 
@@ -39,6 +39,8 @@ public class PlayerRuneKnowledge {
             if (currentQuest.checkIfQuestCompleted(questCompletionPacket)) {
                 //Learn the next letter
                 knownCharacters.get(currentLearningCharacter).learnNextLetter();
+                //And sync the data
+                syncData(player);
                 //And if we still haven't finished
                 if (!knownCharacters.get(currentLearningCharacter).known) {
                     //Move on to the next quest
@@ -79,6 +81,21 @@ public class PlayerRuneKnowledge {
         return knownCharacters.values().stream().filter(PlayerRuneLearningProgress::known).map(PlayerRuneLearningProgress::character).toArray(Character[]::new);
     }
 
+
+
+    private void syncData(Player player) {
+        if (player instanceof ServerPlayer serverPlayer) {
+            ModMessages.sendToPlayer(new RuneKnowledgeDataSyncS2CPacket(knownCharacters, serverPlayer), serverPlayer);
+        }
+        else {
+            ModMessages.sendToServer(new RuneKnowledgeDataSyncC2SPacket(knownCharacters));
+        }
+    }
+
+
+
+    public Map<Character, PlayerRuneLearningProgress> getKnownCharacters() {return knownCharacters;}
+
     public boolean isWordKnown(char character) {
         return knownCharacters.get(character).known;
     }
@@ -87,32 +104,31 @@ public class PlayerRuneKnowledge {
 
     public void saveNBTData(CompoundTag tag) {
         CompoundTag libraryTag = new CompoundTag();
-
         for (char character : RuneTranslationList.alphabet) {
             libraryTag.putInt(Character.toString(character), knownCharacters.get(character).knownLetters);
         }
-
-
         tag.put("runicsmithing:rune_knowledge", libraryTag);
     }
 
     public void loadNBTData(CompoundTag tag) {
         CompoundTag libraryTag = tag.getCompound("runicsmithing:rune_knowledge");
-
-
         for (char character : RuneTranslationList.alphabet) {
             int progress = libraryTag.getInt(Character.toString(character));
             knownCharacters.put(character, new PlayerRuneLearningProgress(character, progress));
         }
     }
 
+    public void copyKnowledgeFrom(Map<Character, PlayerRuneLearningProgress> knownCharacters) {
+        this.knownCharacters = knownCharacters;
+    }
 
-    private static final class PlayerRuneLearningProgress {
+
+    public static final class PlayerRuneLearningProgress {
         private final char character;
         private int knownLetters;
         private boolean known;
 
-        private PlayerRuneLearningProgress(char character, int knownLetters) {
+        public PlayerRuneLearningProgress(char character, int knownLetters) {
             this.character = character;
             this.knownLetters = knownLetters;
             this.known = knownLetters >= RuneTranslationList.getRuneFromCharacter(character).getAssociatedWord().length();

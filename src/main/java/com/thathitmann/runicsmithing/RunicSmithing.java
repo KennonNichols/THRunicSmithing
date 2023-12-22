@@ -12,6 +12,7 @@ import com.thathitmann.runicsmithing.item.custom.supers.GeneratableItem;
 import com.thathitmann.runicsmithing.item.custom.supers.RunicSmithingMaterial;
 import com.thathitmann.runicsmithing.item.custom.supers.smithing_chain.toolModifiers.AspectModifier;
 import com.thathitmann.runicsmithing.item.custom.supers.smithing_chain.toolModifiers.ToolModifierStack;
+import com.thathitmann.runicsmithing.networking.ModMessages;
 import com.thathitmann.runicsmithing.particle.ModParticles;
 import com.thathitmann.runicsmithing.screen.*;
 import com.thathitmann.runicsmithing.sound.ModSounds;
@@ -79,6 +80,7 @@ public class RunicSmithing
 
     private void commonSetup(final FMLCommonSetupEvent ignoredEvent)
     {
+        ModMessages.register();
         //Cook the recipes on minecraft starting
         RSDynamicRecipeRegistry.cook();
     }
