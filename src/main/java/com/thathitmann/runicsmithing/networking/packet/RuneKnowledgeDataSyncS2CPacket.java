@@ -70,13 +70,7 @@ public class RuneKnowledgeDataSyncS2CPacket {
     public boolean handle(Supplier<NetworkEvent.Context> supplier) {
         NetworkEvent.Context context = supplier.get();
         context.enqueueWork(() -> {
-            //TODO enqueue work
-            //ClientRuneKnowledgeData.set(knownCharacters);
             ModEvents.queueProgressSync(playerId, knownCharacters);
-
-            //player.getCapability(PlayerRuneKnowledgeProvider.PLAYER_RUNE_KNOWLEDGE).ifPresent(playerRuneKnowledge -> {
-            //    playerRuneKnowledge.copyKnowledgeFrom(knownCharacters);
-            //});
         });
         return true;
     }

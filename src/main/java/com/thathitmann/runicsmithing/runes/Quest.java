@@ -1,10 +1,15 @@
 package com.thathitmann.runicsmithing.runes;
 
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageType;
+import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
@@ -20,7 +25,7 @@ public abstract class Quest {
     public static class UnParameterizedQuest extends Quest{
         private final UnParameterizedQuestGoal unParameterizedQuestGoal;
 
-        public UnParameterizedQuest(UnParameterizedQuestGoal unParameterizedQuestGoal, String message) {
+        public UnParameterizedQuest(String message, UnParameterizedQuestGoal unParameterizedQuestGoal) {
             super(message);
             this.unParameterizedQuestGoal = unParameterizedQuestGoal;
         }
@@ -33,7 +38,7 @@ public abstract class Quest {
     public static class PickupItemQuest extends Quest{
         private final Item itemGoal;
 
-        public PickupItemQuest(Item itemGoal, String message) {
+        public PickupItemQuest(String message, Item itemGoal) {
             super(message);
             this.itemGoal = itemGoal;
         }
@@ -43,24 +48,27 @@ public abstract class Quest {
             return packet.obtainedItem == itemGoal;
         }
     }
-    public static class KillMobQuest extends Quest{
-        private final LivingEntity entityGoal;
+    public static class KillMobQuest<T extends Entity> extends Quest{
+        private final EntityType<T> entityGoal;
 
-        public KillMobQuest(LivingEntity entityGoal, String message) {
+        public KillMobQuest(String message, EntityType<T> entityGoal) {
             super(message);
             this.entityGoal = entityGoal;
         }
 
         @Override
         public boolean checkIfQuestCompleted(QuestCompletionInfoPacket packet) {
-            return packet.killedEntity == entityGoal;
+            if (packet.killedEntity == null) {
+                return false;
+            }
+            return packet.killedEntity.getType() == entityGoal;
         }
     }
     public static class TakeDamageQuest extends Quest{
-        private final DamageType typeGoal;
+        private final String typeGoal;
         private final float amountGoal;
 
-        public TakeDamageQuest(DamageType type, float amount, String message) {
+        public TakeDamageQuest(String message, String type, float amount) {
             super(message);
             this.typeGoal = type;
             this.amountGoal = amount;
@@ -68,32 +76,42 @@ public abstract class Quest {
 
         @Override
         public boolean checkIfQuestCompleted(QuestCompletionInfoPacket packet) {
-            return packet.damageType == typeGoal && packet.damageAmount >= amountGoal;
+            if (packet.damageType == null) {
+                return false;
+            }
+
+            return packet.damageType.msgId().equals(typeGoal) && packet.damageAmount >= amountGoal;
         }
     }
     public static class DrinkPotionQuest extends Quest{
         private final MobEffect effectGoal;
 
-        public DrinkPotionQuest(MobEffect effect, String message) {
+        public DrinkPotionQuest(String message, MobEffect effect) {
             super(message);
             this.effectGoal = effect;
         }
 
         @Override
         public boolean checkIfQuestCompleted(QuestCompletionInfoPacket packet) {
+            if (packet.mobEffect == null) {
+                return false;
+            }
             return packet.mobEffect == effectGoal;
         }
     }
     public static class EatFoodQuest extends Quest{
         private final int foodGoal;
 
-        public EatFoodQuest(int amount, String message) {
+        public EatFoodQuest(String message, int amount) {
             super(message);
             this.foodGoal = amount;
         }
 
         @Override
         public boolean checkIfQuestCompleted(QuestCompletionInfoPacket packet) {
+            if (packet.hungerGained == null) {
+                return false;
+            }
             return packet.hungerGained >= foodGoal;
         }
     }
@@ -108,6 +126,9 @@ public abstract class Quest {
 
         @Override
         public boolean checkIfQuestCompleted(QuestCompletionInfoPacket packet) {
+            if (packet.unPGoal == null) {
+                return false;
+            }
             return packet.unPGoal == UnParameterizedQuestGoal.EAT_RUNE;
         }
     }
@@ -161,32 +182,32 @@ public abstract class Quest {
         private Integer hungerGained = null;
         private MobEffect mobEffect = null;
         private UnParameterizedQuestGoal unPGoal = null;
-        public CompletionPacketBuilder setPlayerDamageTaken(DamageType type, Float damageAmount) {
+        public CompletionPacketBuilder setPlayerDamageTaken(@NotNull DamageType type, @NotNull Float damageAmount) {
             this.damageType = type;
             this.damageAmount = damageAmount;
             return this;
         }
-        public CompletionPacketBuilder setPlayerKilledEntity(LivingEntity entity) {
+        public CompletionPacketBuilder setPlayerKilledEntity(@NotNull LivingEntity entity) {
             this.killedEntity = entity;
             return this;
         }
 
-        public CompletionPacketBuilder setPlayerObtainedItem(Item item) {
+        public CompletionPacketBuilder setPlayerObtainedItem(@NotNull Item item) {
             this.obtainedItem = item;
             return this;
         }
 
-        public CompletionPacketBuilder setHungerGained(Integer hungerGained) {
+        public CompletionPacketBuilder setHungerGained(@NotNull Integer hungerGained) {
             this.hungerGained = hungerGained;
             return this;
         }
 
-        public CompletionPacketBuilder setMobEffect(MobEffect mobEffect) {
+        public CompletionPacketBuilder setMobEffect(@NotNull MobEffect mobEffect) {
             this.mobEffect = mobEffect;
             return this;
         }
 
-        public CompletionPacketBuilder setUnparameterizedGoal(UnParameterizedQuestGoal unPGoal) {
+        public CompletionPacketBuilder setUnparameterizedGoal(@NotNull UnParameterizedQuestGoal unPGoal) {
             this.unPGoal = unPGoal;
             return this;
         }
@@ -202,6 +223,7 @@ public abstract class Quest {
         SLEEP,
         FISH,
         LEVEL_UP,
-        EAT_RUNE
+        EAT_RUNE,
+        SHIELD_BLOCK
     }
 }

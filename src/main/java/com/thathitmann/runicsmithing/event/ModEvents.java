@@ -9,7 +9,6 @@ import com.thathitmann.runicsmithing.runes.PlayerRuneKnowledgeProvider;
 import com.thathitmann.runicsmithing.runes.Quest;
 import com.thathitmann.runicsmithing.runes.RuneTranslationList;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.resources.sounds.Sound;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.resources.ResourceLocation;
@@ -25,7 +24,6 @@ import net.minecraft.world.item.PotionItem;
 import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.client.event.sound.SoundEvent;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
@@ -33,24 +31,22 @@ import net.minecraftforge.event.entity.item.ItemTossEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import net.minecraftforge.event.entity.living.ShieldBlockEvent;
 import net.minecraftforge.event.entity.player.ItemFishedEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerSleepInBedEvent;
 import net.minecraftforge.event.entity.player.PlayerXpEvent;
 import net.minecraftforge.event.server.ServerStartedEvent;
+import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.common.Mod;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import static com.thathitmann.runicsmithing.RunicSmithing.burningHotTag;
 import static com.thathitmann.runicsmithing.RunicSmithing.heatInsulatingTag;
-import static net.minecraft.world.level.block.EnchantmentTableBlock.BOOKSHELF_OFFSETS;
 
 
 @Mod.EventBusSubscriber(modid = RunicSmithing.MOD_ID)
@@ -71,6 +67,17 @@ public class ModEvents {
     }
 
 
+
+    @SubscribeEvent
+    public static void onPlayerCloned(PlayerEvent.Clone event) {
+        //Keeps rune knowledge when respawning
+        event.getOriginal().reviveCaps();
+        event.getEntity().getCapability(PlayerRuneKnowledgeProvider.PLAYER_RUNE_KNOWLEDGE).ifPresent(playerRuneKnowledge -> playerRuneKnowledge.copyFrom(
+                event.getOriginal().getCapability(PlayerRuneKnowledgeProvider.PLAYER_RUNE_KNOWLEDGE).orElseThrow(RuntimeException::new)
+        ));
+    }
+
+
     @SubscribeEvent
     public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
         if (event.side == LogicalSide.SERVER) {
@@ -86,10 +93,10 @@ public class ModEvents {
 
 
 
-            player.getCapability(PlayerRuneKnowledgeProvider.PLAYER_RUNE_KNOWLEDGE).ifPresent(playerRuneKnowledge -> {
+            //player.getCapability(PlayerRuneKnowledgeProvider.PLAYER_RUNE_KNOWLEDGE).ifPresent(playerRuneKnowledge -> {
                 //System.out.println("SERVER SIDE");
                 //System.out.println(playerRuneKnowledge.getKnownCharacters());
-            });
+            //});
         }
         else {
             //Client side
@@ -97,8 +104,8 @@ public class ModEvents {
             //If the player is in the list
             if (queuedProgressSync.containsKey(player)) {
                 player.getCapability(PlayerRuneKnowledgeProvider.PLAYER_RUNE_KNOWLEDGE).ifPresent(playerRuneKnowledge -> {
-                    System.out.println("CLIENT SIDE");
-                    System.out.println(playerRuneKnowledge.getKnownCharacters());
+                    //System.out.println("CLIENT SIDE");
+                    //System.out.println(playerRuneKnowledge.getKnownCharacters());
 
 
                     //Place queued knowledge
@@ -116,9 +123,9 @@ public class ModEvents {
     };
 
 
-    public static void queueProgressSync(@NotNull int playerId, Map<Character, PlayerRuneKnowledge.PlayerRuneLearningProgress> knownCharacters) {
+    public static void queueProgressSync(int playerId, Map<Character, PlayerRuneKnowledge.PlayerRuneLearningProgress> knownCharacters) {
         queuedProgressSync.put((Player) Minecraft.getInstance().level.getEntity(playerId), knownCharacters);
-        System.out.println(queuedProgressSync);
+        //System.out.println(queuedProgressSync);
     }
 
 
@@ -132,7 +139,21 @@ public class ModEvents {
                 new Quest.CompletionPacketBuilder().setPlayerObtainedItem(event.getStack().getItem()).build(),
                 event.getEntity());
     }
+    @SubscribeEvent
+    public static void onPlayerCraftItem(PlayerEvent.ItemCraftedEvent event) {
+        sendQuestCompletionPacket(
+                new Quest.CompletionPacketBuilder().setPlayerObtainedItem(event.getCrafting().getItem()).build(),
+                event.getEntity());
+    }
 
+    @SubscribeEvent
+    public static void onShieldBlock(ShieldBlockEvent event) {
+        if (event.getEntity() instanceof Player player) {
+            sendQuestCompletionPacket(
+                    new Quest.CompletionPacketBuilder().setUnparameterizedGoal(Quest.UnParameterizedQuestGoal.SHIELD_BLOCK).build(),
+                    player);
+        }
+    }
 
     @SubscribeEvent
     public static void onPlayerSleep(PlayerSleepInBedEvent event) {
@@ -180,7 +201,7 @@ public class ModEvents {
     }
 
     /*@SubscribeEvent
-    public static void onEnchant(EnchantE) {
+    public static void onEnchant(EnchantmentLevelSetEvent) {
         if (event.getLevels() > 0) {
             sendQuestCompletionPacket(
                     new Quest.CompletionPacketBuilder().setUnparameterizedGoal(Quest.UnParameterizedQuestGoal.LEVEL_UP).build(),
@@ -200,10 +221,6 @@ public class ModEvents {
     }
 
 
-    /*@SubscribeEvent
-    public static void onMobHurtByPlayer(AttackEntityEvent event) {
-
-    }*/
 
     @SubscribeEvent
     public static void onMobHurt(LivingHurtEvent event) {
@@ -282,6 +299,16 @@ public class ModEvents {
     }
 
 
+    @SubscribeEvent
+    public static void onPlayerJoinWorld(EntityJoinLevelEvent event) {
+        if(!event.getLevel().isClientSide()) {
+            if(event.getEntity() instanceof ServerPlayer player) {
+                player.getCapability(PlayerRuneKnowledgeProvider.PLAYER_RUNE_KNOWLEDGE).ifPresent(runeKnowledge -> {
+                    ModMessages.sendToPlayer(new RuneKnowledgeDataSyncS2CPacket(runeKnowledge.getKnownCharacters(), player), player);
+                });
+            }
+        }
+    }
 
 
 
@@ -305,26 +332,6 @@ public class ModEvents {
         }
         return false;
     }
-
-
-
-
-
-
-    @SubscribeEvent
-    public static void onPlayerJoinWorld(EntityJoinLevelEvent event) {
-        if(!event.getLevel().isClientSide()) {
-            if(event.getEntity() instanceof ServerPlayer player) {
-                player.getCapability(PlayerRuneKnowledgeProvider.PLAYER_RUNE_KNOWLEDGE).ifPresent(runeKnowledge -> {
-                    ModMessages.sendToPlayer(new RuneKnowledgeDataSyncS2CPacket(runeKnowledge.getKnownCharacters(), player), player);
-                });
-            }
-        }
-    }
-
-
-
-
 
 
 

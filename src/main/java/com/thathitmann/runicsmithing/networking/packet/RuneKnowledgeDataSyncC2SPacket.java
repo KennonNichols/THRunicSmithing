@@ -18,7 +18,12 @@ import static com.thathitmann.runicsmithing.runes.RuneTranslationList.alphabet;
 
 public class RuneKnowledgeDataSyncC2SPacket {
 
+    private static final Character[] modifiedAlphabet = new Character[] {
+            'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z','?'
+    };
+    private static final List<Character> alphabetList = List.of(alphabet);
     private Map<Character, PlayerRuneKnowledge.PlayerRuneLearningProgress> knownCharacters;
+    private char learningChar;
 
     /*
     private Map<Character, Integer> getRuneLearningProgressAsIntMap() {
@@ -31,19 +36,25 @@ public class RuneKnowledgeDataSyncC2SPacket {
 
 
     private int[] getRuneLearningProgressAsIntArray() {
-        return Arrays.stream(alphabet).mapToInt(k -> knownCharacters.get(k).knownLetters()).toArray();
+        return Arrays.stream(modifiedAlphabet).mapToInt(k -> {
+            if (k == '?') {
+                return alphabetList.indexOf(learningChar);
+            }
+            return knownCharacters.get(k).knownLetters();
+        }).toArray();
     }
 
     private void setRuneLearningProgressFromIntArray(int[] intArray) {
-        List<Character> alphabetList = List.of(alphabet);
         knownCharacters = Arrays.stream(alphabet).collect(Collectors.toMap(k -> k, k -> new PlayerRuneKnowledge.PlayerRuneLearningProgress(k, intArray[alphabetList.indexOf(k)])));
+        learningChar = alphabet[intArray[26]];
     }
 
 
 
 
-    public RuneKnowledgeDataSyncC2SPacket(Map<Character, PlayerRuneKnowledge.PlayerRuneLearningProgress> knownCharacters) {
+    public RuneKnowledgeDataSyncC2SPacket(Map<Character, PlayerRuneKnowledge.PlayerRuneLearningProgress> knownCharacters, Character learningCharacter) {
         this.knownCharacters = knownCharacters;
+        this.learningChar = learningCharacter;
     }
     public RuneKnowledgeDataSyncC2SPacket(FriendlyByteBuf buf) {
         //Gets int map, and sets based on it
@@ -67,6 +78,7 @@ public class RuneKnowledgeDataSyncC2SPacket {
 
             player.getCapability(PlayerRuneKnowledgeProvider.PLAYER_RUNE_KNOWLEDGE).ifPresent(runeKnowledge -> {
                 runeKnowledge.copyKnowledgeFrom(knownCharacters);
+                runeKnowledge.setCurrentLearningCharacter(learningChar);
             });
 
             //ClientRuneKnowledgeData.set(knownCharacters);

@@ -34,7 +34,7 @@ public class PlayerRuneKnowledge {
     }
     public void checkQuestCompletion(Quest.QuestCompletionInfoPacket questCompletionPacket, Player player) {
         //If we are learning
-        if (currentLearningCharacter != null) {
+        if (currentQuest != null) {
             //If we just finished the quest
             if (currentQuest.checkIfQuestCompleted(questCompletionPacket)) {
                 //Learn the next letter
@@ -83,12 +83,12 @@ public class PlayerRuneKnowledge {
 
 
 
-    private void syncData(Player player) {
+    public void syncData(Player player) {
         if (player instanceof ServerPlayer serverPlayer) {
             ModMessages.sendToPlayer(new RuneKnowledgeDataSyncS2CPacket(knownCharacters, serverPlayer), serverPlayer);
         }
         else {
-            ModMessages.sendToServer(new RuneKnowledgeDataSyncC2SPacket(knownCharacters));
+            ModMessages.sendToServer(new RuneKnowledgeDataSyncC2SPacket(knownCharacters, currentLearningCharacter));
         }
     }
 
@@ -100,7 +100,12 @@ public class PlayerRuneKnowledge {
         return knownCharacters.get(character).known;
     }
 
-    public void copyFrom(PlayerRuneKnowledge source) {this.knownCharacters = source.knownCharacters;}
+    public void copyFrom(PlayerRuneKnowledge source) {
+        this.knownCharacters = source.knownCharacters;
+        this.currentQuest = source.currentQuest;
+        this.currentLearningCharacter = source.currentLearningCharacter;
+    }
+
 
     public void saveNBTData(CompoundTag tag) {
         CompoundTag libraryTag = new CompoundTag();

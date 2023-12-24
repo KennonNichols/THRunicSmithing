@@ -4,6 +4,8 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.thathitmann.runicsmithing.RunicSmithing;
 import com.thathitmann.runicsmithing.item.custom.supers.smithing_chain.toolModifiers.ToolModifier;
 import com.thathitmann.runicsmithing.item.custom.supers.smithing_chain.toolModifiers.ToolModifierStack;
+import com.thathitmann.runicsmithing.runes.PlayerRuneKnowledgeProvider;
+import com.thathitmann.runicsmithing.runes.RuneTranslationList;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -19,20 +21,14 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 @OnlyIn(Dist.CLIENT)
 public class ToolStationBlockScreen extends AbstractContainerScreen<ToolStationBlockMenu> {
 
-    private static final int SCROLLER_WIDTH = 12;
-    private static final int SCROLLER_HEIGHT = 15;
-    //private static final int RECIPES_COLUMNS = 1;
-    //private static final int RECIPES_ROWS = 6;
-    //private static final int RECIPES_IMAGE_SIZE_WIDTH = 16;
-    //private static final int RECIPES_IMAGE_SIZE_HEIGHT = 18;
-    private static final int SCROLLER_FULL_HEIGHT = 72;
-    private static final int RECIPES_X = 52;
-    private static final int RECIPES_Y = 14;
 
     private float scrollOffs;
     /** Is {@code true} if the player clicked on the scroll wheel in the GUI. */
@@ -41,16 +37,31 @@ public class ToolStationBlockScreen extends AbstractContainerScreen<ToolStationB
     private int startIndex;
 
 
+    private List<RuneWordAssociation> wordAssociations;
+
+
     private static final ResourceLocation TEXTURE =
             new ResourceLocation(RunicSmithing.MOD_ID, "textures/gui/tool_station_block_gui.png");
 
     public ToolStationBlockScreen(ToolStationBlockMenu toolStationBlockMenu, Inventory inventory, Component component) {
         super(toolStationBlockMenu , inventory, component);
         this.menu.blockEntity.setScreen(this);
+
+
+        inventory.player.getCapability(PlayerRuneKnowledgeProvider.PLAYER_RUNE_KNOWLEDGE).ifPresent(playerRuneKnowledge -> {
+            wordAssociations = Arrays.stream(playerRuneKnowledge.getKnownWords()).map(character ->
+                new RuneWordAssociation(
+                    character,
+                    RuneTranslationList.RuneWord.getWordFromCharacter(character).name(),
+                    RuneTranslationList.runeTranslation.get(character).getAssociatedWord()
+            )).toList();
+        });
+
         //toolStationBlockMenu.registerUpdateListener(this);
     }
 
     protected int imageHeight = 198;
+    protected int imageWidth = 205;
 
 
     @Override
@@ -224,6 +235,11 @@ public class ToolStationBlockScreen extends AbstractContainerScreen<ToolStationB
     public void containerChanged() {
         this.scrollOffs = 0.0F;
         this.startIndex = 0;
+    }
+
+
+    private record RuneWordAssociation(Character firstLetter, String englishWord, String runeWord) {
+
     }
 
 

@@ -6,6 +6,11 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.tags.DamageTypeTags;
+import net.minecraft.world.damagesource.*;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.level.storage.DimensionDataStorage;
 import org.jetbrains.annotations.NotNull;
@@ -201,47 +206,47 @@ public class RuneTranslationList {
 
     public enum RuneWord {
         AERIAL('a', null, new Class[]{RSToolEffect.Super.Aerial.class}, 4, RuneWordType.SUPER, new Quest[]{
-            new Quest.EatRuneQuest("Absorb some runes", 4),
-                new Quest.EatRuneQuest("Absorb some runes", 4),
+                new Quest.TakeDamageQuest("Feel the impact of gravity.", "fall", 4),
+                new Quest.TakeDamageQuest("Feel the sting of a rocket.", "fireworks", 1),
                 new Quest.EatRuneQuest("Absorb some runes by shift-clicking on an enchantment table.", 16),
         }),
-        BURN('b', new Class[]{RSToolTrigger.onMobInjured.class, RSToolTrigger.onBlockMined.class}, new Class[]{RSToolEffect.Garble.class}, 2, RuneWordType.BASIC, new Quest[]{
-
+        BURN('b', new Class[]{RSToolTrigger.onMobInjured.class, RSToolTrigger.onBlockMined.class}, new Class[]{RSToolEffect.Burn.class}, 3, RuneWordType.BASIC, new Quest[]{
+                new Quest.TakeDamageQuest("Bathe in the heat of flames.", "inFire", 1),
                 new Quest.EatRuneQuest("Absorb some runes by shift-clicking on an enchantment table.", 5),
         }),
         CRUMBLE('c', null, new Class[]{RSToolEffect.Super.Crumble.class}, 5, RuneWordType.SUPER, new Quest[]{
-                new Quest.EatRuneQuest("Absorb some runes", 4),
-                new Quest.EatRuneQuest("Absorb some runes", 4),
-                new Quest.EatRuneQuest("Absorb some runes", 4),
+                new Quest.PickupItemQuest("Mine the deepest stone.", Items.COBBLED_DEEPSLATE),
+                new Quest.KillMobQuest<>("Kill a winged creature of the deep.", EntityType.BAT),
+                new Quest.UnParameterizedQuest("Learn and grow in experience.", Quest.UnParameterizedQuestGoal.LEVEL_UP),
                 new Quest.EatRuneQuest("Absorb some runes by shift-clicking on an enchantment table.", 15),
         }),
-        DURABILITY('d', new Class[]{RSToolTrigger.onMobInjured.class}, new Class[]{RSToolEffect.Durability.class}, 3, RuneWordType.BASIC, new Quest[]{
-                new Quest.EatRuneQuest("Absorb some runes", 4),
+        DURABILITY('d', new Class[]{RSToolTrigger.onMobInjured.class, RSToolTrigger.onBlockMined.class}, new Class[]{RSToolEffect.Durability.class}, 3, RuneWordType.BASIC, new Quest[]{
+                new Quest.PickupItemQuest("Obtain an anvil.", Items.ANVIL),
                 new Quest.EatRuneQuest("Absorb some runes by shift-clicking on an enchantment table.", 5),
         }),
         ENERGIZE('e', null, new Class[]{RSToolEffect.Super.Energize.class}, 3, RuneWordType.SUPER, new Quest[]{
-                new Quest.EatRuneQuest("Absorb some runes", 4),
+                new Quest.UnParameterizedQuest("Take a nap.", Quest.UnParameterizedQuestGoal.SLEEP),
                 new Quest.EatRuneQuest("Absorb some runes by shift-clicking on an enchantment table.", 12),
         }),
         FORTIFY('f', null, new Class[]{RSToolEffect.TriggeredEffect.Fortify.class}, 3, RuneWordType.TRIGGERED, new Quest[]{
-                new Quest.EatRuneQuest("Absorb some runes", 4),
+                new Quest.UnParameterizedQuest("Deflect an attack.", Quest.UnParameterizedQuestGoal.SHIELD_BLOCK),
                 new Quest.EatRuneQuest("Absorb some runes by shift-clicking on an enchantment table.", 8),
         }),
-        GARBLE('g', new Class[]{RSToolTrigger.onMobInjured.class, RSToolTrigger.onBlockMined.class}, new Class[]{RSToolEffect.Garble.class}, 2, RuneWordType.BASIC, new Quest[]{
+        GARBLE('g', new Class[]{RSToolTrigger.onMobInjured.class, RSToolTrigger.onBlockMined.class}, new Class[]{RSToolEffect.Garble.class}, 3, RuneWordType.BASIC, new Quest[]{
+                new Quest.TakeDamageQuest("Get crushed in a tight space.", "cramming", 1),
                 new Quest.EatRuneQuest("Absorb some runes by shift-clicking on an enchantment table.", 8),
         }),
         HEAL('h', null, new Class[] {RSToolEffect.TriggeredEffect.Heal.class}, 4, RuneWordType.TRIGGERED, new Quest[]{
-                new Quest.EatRuneQuest("Absorb some runes", 4),
-                new Quest.EatRuneQuest("Absorb some runes", 4),
+                new Quest.DrinkPotionQuest("Hurt yourself by unnatural means.", MobEffects.HARM),
+                new Quest.DrinkPotionQuest("Heal yourself by unnatural means.", MobEffects.HEAL),
                 new Quest.EatRuneQuest("Absorb some runes by shift-clicking on an enchantment table.", 12),
         }),
-        INJURE('i', new Class[] {RSToolTrigger.onMobInjured.class}, null, 2, RuneWordType.TRIGGER, new Quest[]{
-
+        INJURE('i', new Class[] {RSToolTrigger.onMobInjured.class}, null, 3, RuneWordType.TRIGGER, new Quest[]{
+                new Quest.KillMobQuest<>("Draw the blood of a zombie.", EntityType.ZOMBIE),
                 new Quest.EatRuneQuest("Absorb some runes by shift-clicking on an enchantment table.", 5),
         }),
         JUMP('j', null, new Class[] {RSToolEffect.TriggeredEffect.Jump.class}, 2, RuneWordType.TRIGGERED, new Quest[]{
                 new Quest.EatRuneQuest("Absorb some runes by shift-clicking on an enchantment table.", 4),
-
         }),
         KILL('k', new Class[] {RSToolTrigger.onHostileMobKilled.class}, null, 2, RuneWordType.TRIGGER, new Quest[]{
                 new Quest.EatRuneQuest("Absorb some runes by shift-clicking on an enchantment table.", 5),
@@ -253,69 +258,67 @@ public class RuneTranslationList {
                 new Quest.EatRuneQuest("Absorb some runes by shift-clicking on an enchantment table.", 5),
         }),
         NOURISH('n', null, new Class[] {RSToolEffect.TriggeredEffect.Nourish.class}, 3, RuneWordType.TRIGGERED, new Quest[]{
-                new Quest.EatRuneQuest("Absorb some runes", 4),
+                new Quest.EatFoodQuest("Eat some fulfilling food.", 6),
                 new Quest.EatRuneQuest("Absorb some runes by shift-clicking on an enchantment table.", 8),
         }),
         OVERHEAL('o', null, new Class[] {RSToolEffect.TriggeredEffect.Overheal.class}, 5, RuneWordType.TRIGGERED, new Quest[]{
-                new Quest.EatRuneQuest("Absorb some runes", 4),
-                new Quest.EatRuneQuest("Absorb some runes", 4),
-                new Quest.EatRuneQuest("Absorb some runes", 4),
+                new Quest.TakeDamageQuest("Feel the pangs of starvation gnawing at you.", "starve", 1),
+                new Quest.EatFoodQuest("Eat some very fulfilling food.", 8),
+                new Quest.DrinkPotionQuest("Heal yourself by unnatural means.", MobEffects.HEAL),
                 new Quest.EatRuneQuest("Absorb some runes by shift-clicking on an enchantment table.", 13),
         }),
         POWER('p', null, new Class[]{RSToolEffect.AttributeModifier.Damage.class}, 3, RuneWordType.ATTRIBUTEMODIFIER, new Quest[]{
-                new Quest.EatRuneQuest("Absorb some runes", 4),
+                new Quest.DrinkPotionQuest("Empower yourself with magic.", MobEffects.DAMAGE_BOOST),
                 new Quest.EatRuneQuest("Absorb some runes by shift-clicking on an enchantment table.", 8),
         }),
         QUICKNESS('q', null, new Class[]{RSToolEffect.AttributeModifier.Haste.class}, 3, RuneWordType.ATTRIBUTEMODIFIER, new Quest[]{
-                new Quest.EatRuneQuest("Absorb some runes", 4),
+                new Quest.DrinkPotionQuest("Speed yourself up.", MobEffects.MOVEMENT_SPEED),
                 new Quest.EatRuneQuest("Absorb some runes by shift-clicking on an enchantment table.", 10),
         }),
         REACH('r', null, new Class[]{RSToolEffect.AttributeModifier.Reach.class}, 3, RuneWordType.ATTRIBUTEMODIFIER, new Quest[]{
-                new Quest.EatRuneQuest("Absorb some runes", 4),
+                new Quest.UnParameterizedQuest("Take some time to fish and lament that the crab lost.", Quest.UnParameterizedQuestGoal.FISH),
                 new Quest.EatRuneQuest("Absorb some runes by shift-clicking on an enchantment table.", 10),
         }),
         SMITE('s', null, new Class[]{RSToolEffect.Super.CallSmite.class}, 5, RuneWordType.SUPER, new Quest[]{
-                new Quest.EatRuneQuest("Absorb some runes", 4),
-                new Quest.EatRuneQuest("Absorb some runes", 4),
-                new Quest.EatRuneQuest("Absorb some runes", 4),
+                new Quest.UnParameterizedQuest("Fish something up.", Quest.UnParameterizedQuestGoal.FISH),
+                new Quest.TakeDamageQuest("Get impaled by a trident.", "trident", 1),
+                new Quest.PickupItemQuest("Obtain a lightning rod", Items.LIGHTNING_ROD),
                 new Quest.EatRuneQuest("Absorb some runes by shift-clicking on an enchantment table.", 15),
         }),
         TOXIC('t',  new Class[]{RSToolTrigger.onMobInjured.class}, new Class[]{RSToolEffect.InflictMobEffect.Poison.class}, 3, RuneWordType.BASIC, new Quest[]{
-                new Quest.EatRuneQuest("Absorb some runes", 8),
+                new Quest.DrinkPotionQuest("Have a taste of your own poison.", MobEffects.POISON),
                 new Quest.EatRuneQuest("Absorb some runes by shift-clicking on an enchantment table.", 8),
 
         }),
         UNWEAVE('u', null, new Class[]{RSToolEffect.Super.UnweaveMatter.class}, 5, RuneWordType.SUPER, new Quest[]{
-                new Quest.EatRuneQuest("Absorb some runes", 4),
-                new Quest.EatRuneQuest("Absorb some runes", 4),
-                new Quest.EatRuneQuest("Absorb some runes", 4),
+                new Quest.PickupItemQuest("Craft an iconic block of creation.", Items.CRAFTING_TABLE),
+                new Quest.PickupItemQuest("Craft an iconic block of destruction.", Items.TNT),
+                new Quest.TakeDamageQuest("Feel the blast wave of an explosion.", "explosion.player", 8),
                 new Quest.EatRuneQuest("Absorb some runes by shift-clicking on an enchantment table.", 18),
         }),
         VAMPIRISM('v', new Class[]{RSToolTrigger.onMobInjured.class}, new Class[] {RSToolEffect.LeechHealth.class}, 3, RuneWordType.BASIC, new Quest[]{
-                new Quest.EatRuneQuest("Absorb some runes", 4),
+                new Quest.DrinkPotionQuest("Heal yourself by unnatural means.", MobEffects.HEAL),
                 new Quest.EatRuneQuest("Absorb some runes by shift-clicking on an enchantment table.", 9),
         }),
         WITHER('w', new Class[]{RSToolTrigger.onMobInjured.class}, new Class[]{RSToolEffect.InflictMobEffect.Wither.class}, 3, RuneWordType.BASIC, new Quest[]{
-                new Quest.EatRuneQuest("Absorb some runes", 4),
+                new Quest.PickupItemQuest("Obtain the skull of a withered beast.", Items.WITHER_SKELETON_SKULL),
                 new Quest.EatRuneQuest("Absorb some runes by shift-clicking on an enchantment table.", 9),
         }),
         XRAY('x', null, new Class[] {RSToolEffect.Super.XRayVision.class}, 3, RuneWordType.SUPER, new Quest[]{
-                new Quest.EatRuneQuest("Absorb some runes", 4),
+                new Quest.PickupItemQuest("Obtain a magic arrow of sight.", Items.SPECTRAL_ARROW),
                 new Quest.EatRuneQuest("Absorb some runes by shift-clicking on an enchantment table.", 9),
         }),
         YOUTH('y', null, new Class[] {RSToolEffect.Super.YouthDrain.class}, 5, RuneWordType.SUPER, new Quest[]{
-                new Quest.EatRuneQuest("Absorb some runes", 4),
-                new Quest.EatRuneQuest("Absorb some runes", 4),
-                new Quest.EatRuneQuest("Absorb some runes", 4),
+                new Quest.KillMobQuest<>("Kill a long-dead undead.", EntityType.SKELETON),
+                new Quest.PickupItemQuest("Gaze into an eye from beyond.", Items.ENDER_EYE),
+                new Quest.UnParameterizedQuest("Get some beauty sleep to keep looking young.", Quest.UnParameterizedQuestGoal.SLEEP),
                 new Quest.EatRuneQuest("Absorb some runes by shift-clicking on an enchantment table.", 15),
         }),
-        ZENITH('z', null, new Class[] {RSToolEffect.Super.ZenithThrow.class}, 8, RuneWordType.SUPER, new Quest[]{
-                new Quest.EatRuneQuest("Absorb some runes", 20),
-                new Quest.EatRuneQuest("Absorb some runes", 4),
-                new Quest.EatRuneQuest("Absorb some runes", 4),
-                new Quest.EatRuneQuest("Absorb some runes", 4),
-                new Quest.EatRuneQuest("Absorb some runes", 4),
-                new Quest.EatRuneQuest("Absorb some runes", 4),
+        ZENITH('z', null, new Class[] {RSToolEffect.Super.ZenithThrow.class}, 6, RuneWordType.SUPER, new Quest[]{
+                new Quest.KillMobQuest<>("Kill the most iconic monster.", EntityType.CREEPER),
+                new Quest.PickupItemQuest("Get a magic apple.", Items.GOLDEN_APPLE),
+                new Quest.PickupItemQuest("Obtain a timeless and precious jewel.", Items.DIAMOND),
+                new Quest.UnParameterizedQuest("Level up.", Quest.UnParameterizedQuestGoal.LEVEL_UP),
                 new Quest.EatRuneQuest("Absorb some runes by shift-clicking on an enchantment table.", 20),
         });
 

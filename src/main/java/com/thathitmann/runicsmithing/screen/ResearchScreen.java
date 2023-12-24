@@ -14,6 +14,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,11 +37,8 @@ public class ResearchScreen extends AbstractContainerScreen<ResearchMenu> {
     protected int imageHeight = 250;
 
 
-    private String weakRuneWord = "";
-    private String runeWord = "";
-    private String runeTranslation = "";
-
-
+    private @NotNull SelectionState selectionState = ResearchScreen.SelectionState.HOVERING;
+    private DisplayMessage displayMessage = new DisplayMessage("", null);
 
     public ResearchScreen(ResearchMenu researchMenu, Inventory inventory, Component component) {
         super(researchMenu, inventory, component);
@@ -112,8 +110,8 @@ public class ResearchScreen extends AbstractContainerScreen<ResearchMenu> {
     private void addButtonRelatedToRune(RuneButton runeButton) {
 
         char runeCharacter = runeButton.character;
-        RuneTranslationList.RuneWord word = RuneTranslationList.RuneWord.getWordFromCharacter(runeCharacter);
-        RuneTranslationList.Rune rune = RuneTranslationList.getRuneFromCharacter(runeCharacter);
+        //RuneTranslationList.RuneWord word = RuneTranslationList.RuneWord.getWordFromCharacter(runeCharacter);
+        //RuneTranslationList.Rune rune = RuneTranslationList.getRuneFromCharacter(runeCharacter);
 
         AbstractButton newButton = new AbstractButton(xStart + runeButton.x, yStart + runeButton.y, 24, 24, Component.literal("")) {
 
@@ -125,9 +123,13 @@ public class ResearchScreen extends AbstractContainerScreen<ResearchMenu> {
                 menu.player.getCapability(PlayerRuneKnowledgeProvider.PLAYER_RUNE_KNOWLEDGE).ifPresent(playerRuneKnowledge -> {
                     //Don't set the word if we already know it.
                     if (!playerRuneKnowledge.isWordKnown(runeCharacter)) {
-                        runeWord = playerRuneKnowledge.getKnownWord(runeCharacter);
                         playerRuneKnowledge.setCurrentLearningCharacter(runeCharacter);
-                        runeTranslation = playerRuneKnowledge.getCurrentQuest().message;
+                        selectionState = SelectionState.SELECTED;
+                        displayMessage = new DisplayMessage(
+                                playerRuneKnowledge.getKnownWord(runeCharacter),
+                                playerRuneKnowledge.getCurrentQuest().message
+                        );
+                        playerRuneKnowledge.syncData(menu.player);
                     }
                 });
             }
@@ -142,20 +144,27 @@ public class ResearchScreen extends AbstractContainerScreen<ResearchMenu> {
             public void render(@NotNull GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
                 super.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
                 pGuiGraphics.blit(TEXTURE, this.getX(), this.getY(), runeButton.x + (this.isHovered() ? 162: 88), runeButton.y, 24, 24);
-
-
-                if (isHovered) {
+                //If we haven't already selected a word, update based on hovered word
+                if (isHovered && selectionState != SelectionState.SELECTED) {
                     //Shows only what portion of the word the player knows
                     menu.player.getCapability(PlayerRuneKnowledgeProvider.PLAYER_RUNE_KNOWLEDGE).ifPresent(playerRuneKnowledge -> {
-                        weakRuneWord = playerRuneKnowledge.getKnownWord(runeCharacter);
+
+                        //If we know it...
                         if (playerRuneKnowledge.isWordKnown(runeCharacter)) {
-                            runeTranslation = RuneTranslationList.RuneWord.getWordFromCharacter(runeCharacter).name();
+                            //Display the runic word and translation
+                            displayMessage = new DisplayMessage(
+                                    playerRuneKnowledge.getKnownWord(runeCharacter),
+                                    RuneTranslationList.RuneWord.getWordFromCharacter(runeCharacter).name()
+                            );
+                            selectionState = SelectionState.HOVERING;
                         }
-                        else if (playerRuneKnowledge.getCurrentQuest() != null && !runeWord.equals("")) {
-                            runeTranslation = playerRuneKnowledge.getCurrentQuest().message;
-                        }
+                        //Otherwise...
                         else {
-                            runeTranslation = "";
+                            displayMessage = new DisplayMessage(
+                                    playerRuneKnowledge.getKnownWord(runeCharacter),
+                                    null
+                            );
+                            selectionState = SelectionState.UNKNOWN_HOVERING;
                         }
                     });
                 }
@@ -192,32 +201,57 @@ public class ResearchScreen extends AbstractContainerScreen<ResearchMenu> {
         }
 
 
-        String drawnWord;
+
+
+
+        //Color based on selection state
         int color;
         int intColor;
-        if (runeWord.equals("")) {
-            drawnWord = weakRuneWord;
-            color = 0;
-            intColor = 0;
-        }
-        else {
-            drawnWord = runeWord;
-            color = 1;
-            intColor = 6831720;
+
+        switch (selectionState) {
+            case HOVERING -> {
+                //Green, if known
+                color = 3;
+                intColor = 3731158;
+            }
+            case UNKNOWN_HOVERING -> {
+                //Purple, if unknown
+                color = 1;
+                intColor = 6831720;
+            }
+            case SELECTED -> {
+                //White, if selected
+                color = 2;
+                intColor = 16777215;
+            }
+            default -> {
+                color = 0;
+                intColor = 1234567;
+            }
         }
 
 
-        RuneTranslationList.drawRunicWordCenteredAt(pGuiGraphics, xStart + imageWidth / 2, yStart + imageHeight + 10, drawnWord, color);
-        //if (!Objects.equals(runeTranslation, "")) {
-            //Draw translation if we know it
-        pGuiGraphics.drawString(Minecraft.getInstance().font, runeTranslation, xStart + imageWidth / 2 - Minecraft.getInstance().font.width(runeTranslation) / 2, yStart + imageHeight + 20, intColor, false);
-        //}
-        //else {
-        //    pGuiGraphics.drawString(Minecraft.getInstance().font, runeTranslation, xStart + imageWidth / 2 - Minecraft.getInstance().font.width(runeTranslation) / 2, yStart + imageHeight + 20, intColor, false);
-        //}
+
+        RuneTranslationList.drawRunicWordCenteredAt(pGuiGraphics, xStart + imageWidth / 2, yStart + imageHeight + 10, displayMessage.message, color);
+        if (displayMessage.subtitle != null) {
+            pGuiGraphics.drawString(Minecraft.getInstance().font, displayMessage.subtitle, xStart + imageWidth / 2 - Minecraft.getInstance().font.width(displayMessage.subtitle) / 2, yStart + imageHeight + 20, intColor, false);
+        }
 
     }
 
+
+
+
+
+
+    private record DisplayMessage(String message, @Nullable String subtitle) {};
+
+
+    private enum SelectionState {
+        HOVERING,
+        UNKNOWN_HOVERING,
+        SELECTED
+    }
 
 
 
